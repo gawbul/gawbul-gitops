@@ -56,14 +56,6 @@ spec:
         grpc:
           enabled: true
     extraObjects:
-      - apiVersion: v1
-        kind: Secret
-        metadata:
-          name: traefik-dashboard-auth-secret
-        type: kubernetes.io/basic-auth
-        stringData:
-          username: ENC[AES256_GCM,data:ehaOnBs=,iv:FWSViAb1yZI39Susjg9t8J5dPS0oMI7BIfn2rtAu8II=,tag:e/B01+o0TwNmw4FKxbLyqA==,type:str]
-          password: ENC[AES256_GCM,data:VDzGCfNCRL+w0WoG5mCoWOJoWh34nFP5T1R+XcIguSf9TZY=,iv:TAq1PnOlBF4zZ4wBkqowyjuBG/h1fKxCDCbzfctyIUU=,tag:MaC1qiug9lBHTHJTm8QTZA==,type:str]
       - apiVersion: traefik.io/v1alpha1
         kind: Middleware
         metadata:
@@ -71,6 +63,15 @@ spec:
         spec:
           basicAuth:
             secret: traefik-dashboard-auth-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traefik-dashboard-auth-secret
+type: kubernetes.io/basic-auth
+stringData:
+  username: ENC[AES256_GCM,data:ehaOnBs=,iv:FWSViAb1yZI39Susjg9t8J5dPS0oMI7BIfn2rtAu8II=,tag:e/B01+o0TwNmw4FKxbLyqA==,type:str]
+  password: ENC[AES256_GCM,data:VDzGCfNCRL+w0WoG5mCoWOJoWh34nFP5T1R+XcIguSf9TZY=,iv:TAq1PnOlBF4zZ4wBkqowyjuBG/h1fKxCDCbzfctyIUU=,tag:MaC1qiug9lBHTHJTm8QTZA==,type:str]
 sops:
   age:
     - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
