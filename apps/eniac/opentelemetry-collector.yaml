@@ -1,0 +1,324 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: otel-collector-environment-secret
+  namespace: monitoring
+type: Opaque
+stringData:
+  HONEYCOMB_API_KEY: ENC[AES256_GCM,data:ywcpLI8AcdeWYE88L27ztNMdOrHcsQ==,iv:nJiM24Igm7uHg649d5ksBZHIdZiHPgFeN6yNbZZ8Y2I=,tag:9hwbVLhnWw6sCdhnhpiAPQ==,type:str]
+sops:
+  age:
+    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
+        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
+        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
+        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
+        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-04-12T18:05:13Z"
+  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  version: 3.10.1
+---
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-collector
+  namespace: monitoring
+spec:
+  envFrom:
+    - secretRef: null
+      name: otel-collector-environment-secret
+  volumeMounts:
+    - mountPath: /hostfs
+      name: hostfs
+      mountPropagation: HostToContainer
+      readOnly: true
+    - mountPath: /var/log/pods
+      name: varlogpods
+      readOnly: true
+  volumes:
+    - name: hostfs
+      hostPath:
+        path: /
+    - name: varlogpods
+      hostPath:
+        path: /var/log/pods
+  mode: daemonset
+  hostNetwork: true
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      k8sattributes:
+        auth_type: serviceAccount
+        extract:
+          metadata:
+            - k8s.namespace.name
+            - k8s.pod.name
+            - k8s.pod.start_time
+            - k8s.pod.uid
+            - k8s.deployment.name
+            - k8s.node.name
+        pod_association:
+          - sources:
+              - from: resource_attribute
+                name: k8s.pod.ip
+          - sources:
+              - from: resource_attribute
+                name: k8s.pod.uid
+          - sources:
+              - from: connection
+      kubeletstats:
+        collection_interval: 10s
+        auth_type: serviceAccount
+        endpoint: '${env:K8S_NODE_NAME}:10250'
+        insecure_skip_verify: true
+        metric_groups:
+          - node
+          - pod
+          - container
+      k8s_cluster:
+        auth_type: serviceAccount
+        node_conditions_to_report:
+          - Ready
+          - MemoryPressure
+        allocatable_types_to_report:
+          - cpu
+          - memory
+      k8sobjects:
+        auth_type: serviceAccount
+        objects:
+          - name: pods
+            mode: pull
+          - name: events
+            mode: watch
+      hostmetrics:
+        root_path: /hostfs
+        collection_interval: 10s
+        scrapers:
+          cpu:
+          load:
+          memory:
+          disk:
+          filesystem:
+          network:
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: "prometheus"
+              scrape_interval: 15s
+              static_configs:
+                - targets: ["0.0.0.0:9100"]
+      filelog:
+        include:
+          - /var/log/pods/*/*/*.log
+        include_file_path: true
+        operators:
+          - type: container
+            id: container-parser
+
+    processors:
+      batch:
+      resourcedetection:
+        detectors: ["env", "system"]
+        override: false
+
+    exporters:
+      debug:
+        verbosity: detailed
+      otlp/k8s-logs:
+        endpoint: "api.eu1.honeycomb.io:443"
+        headers:
+          "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
+          "x-honeycomb-dataset": "k8s-logs"
+      otlp/k8s-metrics:
+        endpoint: "api.eu1.honeycomb.io:443"
+        headers:
+          "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
+          "x-honeycomb-dataset": "k8s-metrics"
+      otlp:
+        endpoint: "api.eu1.honeycomb.io:443"
+        headers:
+          "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
+      otlp/jaeger:
+        endpoint: https://jaeger-collector:4317
+
+    extensions:
+      health_check:
+        use_v2: true
+        http:
+          endpoint: 0.0.0.0:13133
+      pprof:
+      zpages:
+
+    service:
+      extensions: [health_check, pprof, zpages]
+      pipelines:
+        logs:
+          receivers: [filelog, otlp]
+          processors: [batch]
+          exporters: [debug, otlp/k8s-logs]
+        metrics:
+          receivers: [k8sattributes, kubeletstats, k8s_cluster, k8sobjects, hostmetrics, prometheus, otlp]
+          processors: [batch]
+          exporters: [debug, otlp/k8s-metrics]
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug, otlp, otlp/jaeger]
+sops:
+  age:
+    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
+        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
+        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
+        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
+        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-04-12T18:05:13Z"
+  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  version: 3.10.1
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otel-collector
+  namespace: monitoring
+sops:
+  age:
+    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
+        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
+        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
+        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
+        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-04-12T18:05:13Z"
+  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  version: 3.10.1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: otel-collector
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - events
+      - namespaces
+      - namespaces/status
+      - nodes
+      - nodes/spec
+      - nodes/stats
+      - pods
+      - pods/status
+      - replicationcontrollers
+      - replicationcontrollers/status
+      - resourcequotas
+      - services
+    verbs:
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+      - cronjobs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - events.k8s.io
+    resources:
+      - events
+    verbs:
+      - watch
+      - list
+sops:
+  age:
+    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
+        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
+        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
+        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
+        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-04-12T18:05:13Z"
+  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  version: 3.10.1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: otel-collector
+subjects:
+  - kind: ServiceAccount
+    name: otel-collector
+    namespace: monitoring
+roleRef:
+  kind: ClusterRole
+  name: otel-collector
+  apiGroup: rbac.authorization.k8s.io
+sops:
+  age:
+    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
+        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
+        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
+        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
+        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-04-12T18:05:13Z"
+  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  version: 3.10.1
