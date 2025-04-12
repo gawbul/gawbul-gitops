@@ -4,4 +4,7 @@ kind: Kustomization
 resources:
   - cert-manager.yaml
   - metallb.yaml
+  - traefik-namespace.yaml
+  - traefik-secret.yaml
+  - traefik-tls.yaml
   - traefik.yaml

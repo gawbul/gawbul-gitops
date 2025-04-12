@@ -1,26 +1,3 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: otel-collector-environment-secret
-  namespace: monitoring
-type: Opaque
-stringData:
-  HONEYCOMB_API_KEY: ENC[AES256_GCM,data:ywcpLI8AcdeWYE88L27ztNMdOrHcsQ==,iv:nJiM24Igm7uHg649d5ksBZHIdZiHPgFeN6yNbZZ8Y2I=,tag:9hwbVLhnWw6sCdhnhpiAPQ==,type:str]
-sops:
-  age:
-    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
-        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
-        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
-        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
-        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-04-12T18:05:13Z"
-  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  version: 3.10.1
 ---
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
@@ -173,42 +150,12 @@ spec:
           receivers: [otlp]
           processors: [batch]
           exporters: [debug, otlp, otlp/jaeger]
-sops:
-  age:
-    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
-        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
-        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
-        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
-        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-04-12T18:05:13Z"
-  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  version: 3.10.1
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: otel-collector
   namespace: monitoring
-sops:
-  age:
-    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
-        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
-        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
-        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
-        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-04-12T18:05:13Z"
-  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  version: 3.10.1
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -279,21 +226,6 @@ rules:
     verbs:
       - watch
       - list
-sops:
-  age:
-    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
-        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
-        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
-        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
-        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-04-12T18:05:13Z"
-  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  version: 3.10.1
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -307,18 +239,3 @@ roleRef:
   kind: ClusterRole
   name: otel-collector
   apiGroup: rbac.authorization.k8s.io
-sops:
-  age:
-    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOakEyelhBcFdzMUVGNDRr
-        Y2ZtL2ZHcW5pUGF5MTc5KyszSlI1SnlPZ24wCnNSckJYK0l1amZPYXJqSW9pV3lK
-        U0g4UmY1eGdTekRPSUVmdENoaVVGSDgKLS0tIG9qQWV2Vzh0aC9lMFRXWDM4Zklq
-        WUxUUjJINDVOUVp1eUp3eTVkV1l4WncKS/zBv3N5xUyB+yFkbIhtXQ8HBWThagNA
-        ckKIZvZNxoLn237M/PwyLuON9jXCjogx1HvDcDeACzw8Lxchf2y1jg==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-04-12T18:05:13Z"
-  mac: ENC[AES256_GCM,data:RWkikg+IJncm+66oCj2btVGnpsLduzSGBDZ/rPKcAvp4FhoUPwWb99pwoIMblV6qSepB+GupOH5j7j9rEkwJuvIIondakXIra1M8I3WDjOW2JEq7iOSRwOk8+NAdnC4PbtlclnErY/QcuPN6CzLA8kIREvCNO9ulIiY3rnG98JI=,iv:QDbV5wT2vgGN8pRGUhTrkq93GU8+Z676YvBItS78VZg=,tag:ezBEiG+EQsuzDLk7ef3DNg==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  version: 3.10.1
