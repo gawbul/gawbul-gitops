@@ -6,6 +6,31 @@ metadata:
   labels:
     toolkit.fluxcd.io/tenant: gawbul
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traefik-dashboard-auth-secret
+  namespace: traefik
+type: kubernetes.io/basic-auth
+stringData:
+  username: ENC[AES256_GCM,data:ehaOnBs=,iv:FWSViAb1yZI39Susjg9t8J5dPS0oMI7BIfn2rtAu8II=,tag:e/B01+o0TwNmw4FKxbLyqA==,type:str]
+  password: ENC[AES256_GCM,data:VDzGCfNCRL+w0WoG5mCoWOJoWh34nFP5T1R+XcIguSf9TZY=,iv:TAq1PnOlBF4zZ4wBkqowyjuBG/h1fKxCDCbzfctyIUU=,tag:MaC1qiug9lBHTHJTm8QTZA==,type:str]
+sops:
+  age:
+    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAyRGh5UkNoeU5zSlFjaC85
+        TmhIdjZLYWIyTityOEpCRU8xK0IvajBRYmhrCjFiSkQxSm5JYjVRVS9wN28reGJK
+        WDJoSW5xWDdOZkFudU5lYnpkT1BxNlkKLS0tIFNSdldobXV1S0ZsQVJEMmpZVUhz
+        STJLNE11MERpZkdGSzM3M2IwelJBam8KXGzLYK/7fJU5fdRi/ZfggiuAGlvajsWM
+        +7ElfPTarpEF1JZkdya8CXCumAEX2sspHJtw4L2KRssYj6TUEY/oOA==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-04-05T11:19:14Z"
+  mac: ENC[AES256_GCM,data:s3j7SuhCqim4ddOmA4IgDrK6P/wGmXXbOr1B3gH7jxnYhsznMPvbmoyvKDCMdFnKyz1AUFqmrf5f6qlI65eyogp66scZ95nkAcqADzO7MngvlaRP1t+3CIIc/hDgax9obNWfBvzqXGjLOyLwhFaCfy7Niuvy4UXmjZC5R5ZaIwA=,iv:02Lu/UBXNcMFAtn679BEJvRHY1j6cpQqOnlAYKy6U9g=,tag:enN51fPgWwLBic48x5+svQ==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  version: 3.10.1
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -63,27 +88,3 @@ spec:
         spec:
           basicAuth:
             secret: traefik-dashboard-auth-secret
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: traefik-dashboard-auth-secret
-type: kubernetes.io/basic-auth
-stringData:
-  username: ENC[AES256_GCM,data:ehaOnBs=,iv:FWSViAb1yZI39Susjg9t8J5dPS0oMI7BIfn2rtAu8II=,tag:e/B01+o0TwNmw4FKxbLyqA==,type:str]
-  password: ENC[AES256_GCM,data:VDzGCfNCRL+w0WoG5mCoWOJoWh34nFP5T1R+XcIguSf9TZY=,iv:TAq1PnOlBF4zZ4wBkqowyjuBG/h1fKxCDCbzfctyIUU=,tag:MaC1qiug9lBHTHJTm8QTZA==,type:str]
-sops:
-  age:
-    - recipient: age1hvmdhkt8llkq3m00ullewwgycy2ujr8tlhqk6ley07usyexcq9vsz8mymh
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAyRGh5UkNoeU5zSlFjaC85
-        TmhIdjZLYWIyTityOEpCRU8xK0IvajBRYmhrCjFiSkQxSm5JYjVRVS9wN28reGJK
-        WDJoSW5xWDdOZkFudU5lYnpkT1BxNlkKLS0tIFNSdldobXV1S0ZsQVJEMmpZVUhz
-        STJLNE11MERpZkdGSzM3M2IwelJBam8KXGzLYK/7fJU5fdRi/ZfggiuAGlvajsWM
-        +7ElfPTarpEF1JZkdya8CXCumAEX2sspHJtw4L2KRssYj6TUEY/oOA==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-04-05T11:19:14Z"
-  mac: ENC[AES256_GCM,data:s3j7SuhCqim4ddOmA4IgDrK6P/wGmXXbOr1B3gH7jxnYhsznMPvbmoyvKDCMdFnKyz1AUFqmrf5f6qlI65eyogp66scZ95nkAcqADzO7MngvlaRP1t+3CIIc/hDgax9obNWfBvzqXGjLOyLwhFaCfy7Niuvy4UXmjZC5R5ZaIwA=,iv:02Lu/UBXNcMFAtn679BEJvRHY1j6cpQqOnlAYKy6U9g=,tag:enN51fPgWwLBic48x5+svQ==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  version: 3.10.1
