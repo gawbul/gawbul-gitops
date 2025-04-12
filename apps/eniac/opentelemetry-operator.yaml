@@ -34,7 +34,7 @@ spec:
         enabled: true
         issuerRef:
           kind: ClusterIssuer
-          name: letsencrypt
+          name: selfsigned-issuer
       autoGenerateCert:
         enabled: true
 ---

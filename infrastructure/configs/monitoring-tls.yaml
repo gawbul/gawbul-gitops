@@ -26,6 +26,6 @@ spec:
   emailAddresses:
     - gawbul@gmail.com
   issuerRef:
-    name: letsencrypt
+    name: selfsigned-issuer
     kind: ClusterIssuer
     group: cert-manager.io
