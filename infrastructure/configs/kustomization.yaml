@@ -5,4 +5,3 @@ resources:
   - cluster-issuers.yaml
   - metallb.yaml
   - monitoring-tls.yaml
-  - traefik-tls.yaml
