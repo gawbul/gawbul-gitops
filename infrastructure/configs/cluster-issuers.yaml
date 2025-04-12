@@ -9,8 +9,8 @@ spec:
     # The server is replaced in /clusters/eniac/infrastructure.yaml
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-nginx
+      name: letsencrypt-traefik
     solvers:
       - http01:
           ingress:
-            class: nginx
+            ingressClassName: traefik

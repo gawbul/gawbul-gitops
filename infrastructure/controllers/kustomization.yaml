@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - cert-manager.yaml
   - metallb.yaml
-  - ingress-nginx.yaml
+  - traefik.yaml
