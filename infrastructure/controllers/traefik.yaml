@@ -66,8 +66,7 @@ spec:
         middlewares:
           - name: traefik-dashboard-auth
         tls:
-          - secretName: traefik-tls
-            hosts: traefik.kubernetes.local
+          secretName: traefik-tls
     metrics:
       addInternals: true
       otlp:
