@@ -6,3 +6,4 @@ resources:
   - kube-prometheus-stack.yaml
   - jaeger.yaml
   - opentelemetry-operator.yaml
+  - reloader.yaml
