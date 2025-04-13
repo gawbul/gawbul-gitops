@@ -117,19 +117,11 @@ spec:
       extensions: [health_check, pprof, zpages]
       pipelines:
         logs:
-          receivers: [filelog, otlp]
+          receivers: [k8sobjects, filelog, otlp]
           processors: [batch]
           exporters: [debug, otlp/k8s-logs]
         metrics:
-          receivers:
-            [
-              kubeletstats,
-              k8s_cluster,
-              k8sobjects,
-              hostmetrics,
-              prometheus,
-              otlp,
-            ]
+          receivers: [kubeletstats, k8s_cluster, hostmetrics, prometheus, otlp]
           processors: [batch, k8sattributes]
           exporters: [debug, otlp/k8s-metrics]
         traces:
