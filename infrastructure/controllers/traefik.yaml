@@ -24,6 +24,9 @@ spec:
         name: traefik
         namespace: traefik
       interval: 12h
+  dependsOn:
+    - name: cert-manager
+    - name: metallb
   values:
     ingressRoute:
       dashboard:
