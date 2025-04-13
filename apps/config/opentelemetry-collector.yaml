@@ -88,8 +88,6 @@ spec:
         override: false
 
     exporters:
-      debug:
-        verbosity: detailed
       otlp/k8s-logs:
         endpoint: "api.eu1.honeycomb.io:443"
         headers:
@@ -119,15 +117,15 @@ spec:
         logs:
           receivers: [k8sobjects, filelog, otlp]
           processors: [batch]
-          exporters: [debug, otlp/k8s-logs]
+          exporters: [otlp/k8s-logs]
         metrics:
           receivers: [kubeletstats, k8s_cluster, hostmetrics, prometheus, otlp]
           processors: [batch, k8sattributes]
-          exporters: [debug, otlp/k8s-metrics]
+          exporters: [otlp/k8s-metrics]
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug, otlp, otlp/jaeger]
+          exporters: [otlp, otlp/jaeger]
   envFrom:
     - secretRef:
         name: otel-collector-environment-secret
