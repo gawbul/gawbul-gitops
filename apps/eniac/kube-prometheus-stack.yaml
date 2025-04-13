@@ -51,6 +51,10 @@ spec:
     grafana:
       env:
         JAEGER_AGENT_PORT: ""
+      grafana.ini:
+        server:
+          root_url: "https://%(domain)s/grafana"
+          serve_from_sub_path: true
       ingress:
         enabled: true
         ingressClassName: traefik
