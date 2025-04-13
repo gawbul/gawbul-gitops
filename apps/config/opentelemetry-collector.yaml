@@ -117,15 +117,15 @@ spec:
         logs:
           receivers: [k8sobjects, filelog, otlp]
           processors: [batch]
-          exporters: [otlp/k8s-logs]
+          exporters: []
         metrics:
           receivers: [kubeletstats, k8s_cluster, hostmetrics, prometheus, otlp]
           processors: [batch, k8sattributes]
-          exporters: [otlp/k8s-metrics]
+          exporters: []
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [otlp, otlp/jaeger]
+          exporters: [otlp/jaeger]
   envFrom:
     - secretRef:
         name: otel-collector-environment-secret
