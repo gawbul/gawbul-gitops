@@ -30,10 +30,16 @@ spec:
     storage:
       type: elasticsearch
     elasticsearch:
-      persistence:
-        enabled: true
-        storageClass: nfs-csi
-        size: 8Gi
+      data:
+        persistence:
+          enabled: true
+          storageClass: nfs-csi
+          size: 8Gi
+      master:
+        persistence:
+          enabled: true
+          storageClass: nfs-csi
+          size: 8Gi
     collector:
       service:
         otlp:
