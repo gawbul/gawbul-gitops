@@ -59,6 +59,8 @@ spec:
           - secretName: monitoring-tls
             hosts:
               - monitoring.kubernetes.local
+      initChownData:
+        enabled: false
       persistence:
         enabled: true
         type: sts
