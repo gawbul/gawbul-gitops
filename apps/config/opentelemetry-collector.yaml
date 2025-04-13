@@ -108,15 +108,13 @@ spec:
         endpoint: https://jaeger-collector:4317
 
     extensions:
-      healthcheckv2:
-        use_v2: true
-        http:
-          endpoint: 0.0.0.0:13133
+      health_check:
+        endpoint: 0.0.0.0:13133
       pprof:
       zpages:
 
     service:
-      extensions: [healthcheckv2, pprof, zpages]
+      extensions: [health_check, pprof, zpages]
       pipelines:
         logs:
           receivers: [filelog, otlp]
