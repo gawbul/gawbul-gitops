@@ -37,6 +37,8 @@ spec:
           - secretName: monitoring-tls
             hosts:
               - monitoring.kubernetes.local
+      service:
+        clusterPort: 9094
       alertmanagerSpec:
         storage:
           volumeClaimTemplate:
