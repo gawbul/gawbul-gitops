@@ -5,27 +5,7 @@ metadata:
   name: otel-collector
   namespace: monitoring
 spec:
-  envFrom:
-    - secretRef: null
-      name: otel-collector-environment-secret
-  volumeMounts:
-    - mountPath: /hostfs
-      name: hostfs
-      mountPropagation: HostToContainer
-      readOnly: true
-    - mountPath: /var/log/pods
-      name: varlogpods
-      readOnly: true
-  volumes:
-    - name: hostfs
-      hostPath:
-        path: /
-    - name: varlogpods
-      hostPath:
-        path: /var/log/pods
-  mode: daemonset
-  hostNetwork: true
-  config: |
+  config:
     receivers:
       otlp:
         protocols:
@@ -55,7 +35,7 @@ spec:
       kubeletstats:
         collection_interval: 10s
         auth_type: serviceAccount
-        endpoint: '${env:K8S_NODE_NAME}:10250'
+        endpoint: "${env:K8S_NODE_NAME}:10250"
         insecure_skip_verify: true
         metric_groups:
           - node
@@ -143,13 +123,42 @@ spec:
           processors: [batch]
           exporters: [debug, otlp/k8s-logs]
         metrics:
-          receivers: [k8sattributes, kubeletstats, k8s_cluster, k8sobjects, hostmetrics, prometheus, otlp]
+          receivers:
+            [
+              k8sattributes,
+              kubeletstats,
+              k8s_cluster,
+              k8sobjects,
+              hostmetrics,
+              prometheus,
+              otlp,
+            ]
           processors: [batch]
           exporters: [debug, otlp/k8s-metrics]
         traces:
           receivers: [otlp]
           processors: [batch]
           exporters: [debug, otlp, otlp/jaeger]
+  envFrom:
+    - secretRef:
+      name: otel-collector-environment-secret
+  hostNetwork: true
+  mode: daemonset
+  volumeMounts:
+    - mountPath: /hostfs
+      name: hostfs
+      mountPropagation: HostToContainer
+      readOnly: true
+    - mountPath: /var/log/pods
+      name: varlogpods
+      readOnly: true
+  volumes:
+    - name: hostfs
+      hostPath:
+        path: /
+    - name: varlogpods
+      hostPath:
+        path: /var/log/pods
 ---
 apiVersion: v1
 kind: ServiceAccount
