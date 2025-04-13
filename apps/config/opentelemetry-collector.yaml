@@ -141,7 +141,7 @@ spec:
           exporters: [debug, otlp, otlp/jaeger]
   envFrom:
     - secretRef:
-      name: otel-collector-environment-secret
+        name: otel-collector-environment-secret
   hostNetwork: true
   mode: daemonset
   volumeMounts:
