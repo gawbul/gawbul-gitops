@@ -49,6 +49,8 @@ spec:
                   storage: 50Gi
         routePrefix: /alertmanager
     grafana:
+      env:
+        JAEGER_AGENT_PORT: ""
       ingress:
         enabled: true
         ingressClassName: traefik
