@@ -92,6 +92,8 @@ spec:
           - name: web.enable-otlp-receiver
             value: ""
         enableRemoteWriteReceiver: true
+        enableFeatures:
+          - remote-write-receiver
         storageSpec:
           volumeClaimTemplate:
             spec:
