@@ -35,18 +35,24 @@ spec:
           - name: traefik-dashboard-auth
         tls:
           secretName: traefik-tls
+    logs:
+      access:
+        enabled: true
+        addInternals: true
     metrics:
       addInternals: true
       otlp:
         enabled: true
         grpc:
           enabled: true
+          endpoint: http://otel-collector-collector:4317/v1/metrics
     tracing:
       addInternals: true
       otlp:
         enabled: true
         grpc:
           enabled: true
+          endpoint: http://otel-collector-collector:4317/v1/traces
     extraObjects:
       - apiVersion: traefik.io/v1alpha1
         kind: Middleware
