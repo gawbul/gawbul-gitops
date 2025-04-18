@@ -5,7 +5,6 @@ resources:
   - ../base
   - loki.yaml
   - kube-prometheus-stack.yaml
-  - mimir.yaml
   - jaeger.yaml
   - opentelemetry-operator.yaml
   - reloader.yaml
