@@ -47,13 +47,6 @@ spec:
           disk:
           filesystem:
           network:
-      prometheus:
-        config:
-          scrape_configs:
-            - job_name: "prometheus"
-              scrape_interval: 15s
-              static_configs:
-                - targets: ["0.0.0.0:9100"]
       filelog:
         include:
           - /var/log/pods/*/*/*.log
@@ -104,8 +97,17 @@ spec:
           "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
       loki:
         endpoint: http://loki:3100/otlp/v1/logs
-      mimir:
-        endpoint: http://mimir/otlp
+      prometheus:
+        endpoint: "prometheus-operated:9090"
+        namespace: monitoring
+        send_timestamps: true
+        metric_expiration: 180m
+        enable_open_metrics: true
+        add_metric_suffixes: false
+        resource_to_telemetry_conversion:
+          enabled: true
+      otlp/jaeger:
+        endpoint: http://jaeger-collector:4317
 
     extensions:
       health_check:
@@ -121,13 +123,13 @@ spec:
           processors: [batch]
           exporters: [loki]
         metrics:
-          receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics, prometheus]
+          receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics]
           processors: [batch, k8sattributes]
-          exporters: [mimir]
+          exporters: [prometheus]
         traces:
-          receivers: [otlp, jaeger, zipkin]
+          receivers: [otlp]
           processors: [batch]
-          exporters: []
+          exporters: [otlp/jaeger]
   envFrom:
     - secretRef:
         name: otel-collector-environment-secret
