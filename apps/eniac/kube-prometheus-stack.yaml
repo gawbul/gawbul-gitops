@@ -52,7 +52,7 @@ spec:
         routePrefix: /alertmanager
     grafana:
       env:
-        JAEGER_AGENT_PORT: ""
+        JAEGER_AGENT_PORT: "5775"
       grafana.ini:
         server:
           root_url: "https://%(domain)s/grafana"

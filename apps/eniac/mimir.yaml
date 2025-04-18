@@ -16,6 +16,11 @@ spec:
         namespace: monitoring
       interval: 12h
   values:
+    global:
+      dnsService: coredns
+      extraEnv:
+        - name: JAEGER_AGENT_PORT
+          value: "5775"
     alertmanager:
       persistentVolume:
         storageClass: nfs-csi
