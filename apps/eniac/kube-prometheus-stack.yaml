@@ -50,7 +50,13 @@ spec:
                 requests:
                   storage: 50Gi
         routePrefix: /alertmanager
+    coreDns:
+      service:
+        selector:
+          k8s-app: coredns
     kubeControllerManager:
+      endpoints:
+        - 192.168.50.4
       service:
         ports:
           http: 10257
@@ -60,6 +66,11 @@ spec:
         https: true
         insecureSkipVerify: "true"
     kubeProxy:
+      endpoints:
+        - 192.168.50.4
+        - 192.168.50.5
+        - 192.168.50.6
+        - 192.168.50.7
       service:
         port: 10249
         targetPort: 10249
@@ -67,6 +78,8 @@ spec:
         https: true
         insecureSkipVerify: "true"
     kubeScheduler:
+      endpoints:
+        - 192.168.50.4
       service:
         ports:
           http: 10259
