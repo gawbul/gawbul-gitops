@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ../base
   - kube-prometheus-stack.yaml
+  - loki.yaml
   - jaeger.yaml
   - opentelemetry-operator.yaml
   - reloader.yaml
