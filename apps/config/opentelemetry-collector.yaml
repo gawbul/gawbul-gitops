@@ -102,7 +102,9 @@ spec:
         endpoint: "api.eu1.honeycomb.io:443"
         headers:
           "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
-      otlp/jaeger:
+      loki:
+        endpoint: https://loki:3100/otlp/v1/logs
+      jaeger:
         endpoint: https://jaeger-collector:4317
 
     extensions:
@@ -115,17 +117,17 @@ spec:
       extensions: [health_check, pprof, zpages]
       pipelines:
         logs:
-          receivers: [k8sobjects, filelog, otlp]
+          receivers: [otlp, k8sobjects, filelog]
           processors: [batch]
-          exporters: []
+          exporters: [loki]
         metrics:
-          receivers: [kubeletstats, k8s_cluster, hostmetrics, prometheus, otlp]
+          receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics, prometheus]
           processors: [batch, k8sattributes]
           exporters: []
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [otlp/jaeger]
+          exporters: [jaeger]
   envFrom:
     - secretRef:
         name: otel-collector-environment-secret
