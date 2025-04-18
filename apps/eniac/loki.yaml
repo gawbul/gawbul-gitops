@@ -16,6 +16,8 @@ spec:
         namespace: monitoring
       interval: 12h
   values:
+    global:
+      dnsService: "coredns"
     loki:
       commonConfig:
         replication_factor: 1
