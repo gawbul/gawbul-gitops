@@ -27,7 +27,16 @@ spec:
   values:
     manager:
       collectorImage:
-        repository: otel/opentelemetry-collector-k8s
+        repository: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib"
+      autoInstrumentationImage:
+        java:
+          repository: "ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java"
+        nodejs:
+          repository: "ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-nodejs"
+        python:
+          repository: "ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python"
+        go:
+          repository: "ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go"
       serviceMonitor:
         enabled: true
     admissionWebhooks:
