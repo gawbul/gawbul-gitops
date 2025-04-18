@@ -1,5 +1,5 @@
 apiVersion: opentelemetry.io/v1alpha1
-kind: OpenTelemetryInstrumentation
+kind: Instrumentation
 metadata:
   name: otel-instrumentation
 spec:
@@ -8,12 +8,10 @@ spec:
   propagators:
     - tracecontext
     - baggage
-    - b3
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1"
   python:
-    env:
-      - name: OTEL_EXPORTER_OTLP_ENDPOINT
-        value: http://otel-collector-collector:4318
-  dotnet:
     env:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://otel-collector-collector:4318
