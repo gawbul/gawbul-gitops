@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - opentelemetry-collector-secret.yaml
   - opentelemetry-collector.yaml
+  - opentelemetry-instrumentation.yaml
