@@ -107,15 +107,8 @@ spec:
           "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
       loki:
         endpoint: http://loki:3100/otlp/v1/logs
-      prometheus:
-        endpoint: "prometheus-operated:9090"
-        namespace: monitoring
-        send_timestamps: true
-        metric_expiration: 180m
-        enable_open_metrics: true
-        add_metric_suffixes: false
-        resource_to_telemetry_conversion:
-          enabled: true
+      prometheusremotewrite:
+        endpoint: prometheus-operated:9090/api/v1/write
       otlp/jaeger:
         endpoint: http://jaeger-collector:4317
 
@@ -135,7 +128,7 @@ spec:
         metrics:
           receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics, prometheus]
           processors: [batch, k8sattributes]
-          exporters: [prometheus]
+          exporters: [prometheusremotewrite]
         traces:
           receivers: [otlp, jaeger]
           processors: [batch]
