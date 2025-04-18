@@ -54,6 +54,9 @@ spec:
       service:
         selector:
           k8s-app: coredns
+    kubeEtcd:
+      endpoints:
+        - 192.168.50.4
     kubeControllerManager:
       endpoints:
         - 192.168.50.4
