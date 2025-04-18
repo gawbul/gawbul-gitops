@@ -103,9 +103,9 @@ spec:
         headers:
           "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
       loki:
-        endpoint: https://loki:3100/otlp/v1/logs
-      jaeger:
-        endpoint: https://jaeger-collector:4317
+        endpoint: http://loki:3100/otlp/v1/logs
+      mimir:
+        endpoint: http://mimir/otlp
 
     extensions:
       health_check:
@@ -123,11 +123,11 @@ spec:
         metrics:
           receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics, prometheus]
           processors: [batch, k8sattributes]
-          exporters: []
+          exporters: [mimir]
         traces:
-          receivers: [otlp]
+          receivers: [otlp, jaeger, zipkin]
           processors: [batch]
-          exporters: [jaeger]
+          exporters: []
   envFrom:
     - secretRef:
         name: otel-collector-environment-secret
