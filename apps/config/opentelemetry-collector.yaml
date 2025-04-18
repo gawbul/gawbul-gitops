@@ -138,6 +138,7 @@ spec:
         name: otel-collector-environment-secret
   hostNetwork: true
   mode: daemonset
+  serviceAccount: otel-collector
   volumeMounts:
     - mountPath: /hostfs
       name: hostfs
