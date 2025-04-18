@@ -3,8 +3,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../base
-  - kube-prometheus-stack.yaml
   - loki.yaml
+  - kube-prometheus-stack.yaml
+  - mimir.yaml
   - jaeger.yaml
   - opentelemetry-operator.yaml
   - reloader.yaml
