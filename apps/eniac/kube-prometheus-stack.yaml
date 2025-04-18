@@ -88,6 +88,9 @@ spec:
             hosts:
               - monitoring.kubernetes.local
       prometheusSpec:
+        additionalArgs:
+          - name: web.enable-otlp-receiver
+            value: ""
         enableRemoteWriteReceiver: true
         storageSpec:
           volumeClaimTemplate:
