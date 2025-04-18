@@ -107,7 +107,7 @@ spec:
       otlphttp/loki:
         endpoint: http://loki:3100/otlp
       prometheusremotewrite:
-        endpoint: http://prometheus-operated:9090/prometheus/api/v1/otlp/v1/metrics
+        endpoint: http://prometheus-operated:9090/prometheus/api/v1/write
         resource_to_telemetry_conversion:
           enabled: true
         timeout: 60s
