@@ -50,6 +50,18 @@ spec:
                 requests:
                   storage: 50Gi
         routePrefix: /alertmanager
+    kubeControllerManager:
+      serviceMonitor:
+        https: true
+        insecureSkipVerify: true
+    kubeProxy:
+      serviceMonitor:
+        https: true
+        insecureSkipVerify: true
+    kubeScheduler:
+      serviceMonitor:
+        https: true
+        insecureSkipVerify: true
     grafana:
       env:
         JAEGER_AGENT_PORT: "5775"
