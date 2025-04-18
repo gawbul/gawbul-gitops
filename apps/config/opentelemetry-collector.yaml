@@ -38,7 +38,6 @@ spec:
           - name: events
             mode: watch
       hostmetrics:
-        root_path: /hostfs
         collection_interval: 10s
         scrapers:
           cpu:
@@ -140,17 +139,10 @@ spec:
   mode: daemonset
   serviceAccount: otel-collector
   volumeMounts:
-    - mountPath: /hostfs
-      name: hostfs
-      mountPropagation: HostToContainer
-      readOnly: true
     - mountPath: /var/log/pods
       name: varlogpods
       readOnly: true
   volumes:
-    - name: hostfs
-      hostPath:
-        path: /
     - name: varlogpods
       hostPath:
         path: /var/log/pods
