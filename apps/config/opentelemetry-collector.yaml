@@ -109,7 +109,7 @@ spec:
       prometheusremotewrite:
         endpoint: prometheus-operated:9090/prometheus/api/v1/otlp/v1/metrics
       otlp/jaeger:
-        endpoint: https://jaeger-collector:4317
+        endpoint: http://jaeger-collector:4318
 
     extensions:
       health_check:
