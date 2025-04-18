@@ -5,7 +5,7 @@ metadata:
   namespace: monitoring
 spec:
   exporter:
-    endpoint: "http://otel-collector-collector:4317"
+    endpoint: "http://otel-collector-collector.monitoring.svc.cluster.local:4317"
   propagators:
     - tracecontext
     - baggage
@@ -15,8 +15,8 @@ spec:
   python:
     env:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
-        value: http://otel-collector-collector:4318
+        value: http://otel-collector-collector.monitoring.svc.cluster.local:4318
   go:
     env:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
-        value: http://otel-collector-collector:4318
+        value: http://otel-collector-collector.monitoring.svc.cluster.local:4318
