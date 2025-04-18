@@ -106,7 +106,7 @@ spec:
         headers:
           "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
       otlphttp/loki:
-        endpoint: http://loki:3100/otlp/v1/logs
+        endpoint: http://loki:3100/otlp
       prometheusremotewrite:
         endpoint: prometheus-operated:9090/api/v1/write
       otlp/jaeger:
