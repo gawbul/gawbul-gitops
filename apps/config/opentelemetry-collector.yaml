@@ -105,7 +105,7 @@ spec:
         endpoint: "api.eu1.honeycomb.io:443"
         headers:
           "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
-      loki:
+      otlphttp/loki:
         endpoint: http://loki:3100/otlp/v1/logs
       prometheusremotewrite:
         endpoint: prometheus-operated:9090/api/v1/write
@@ -124,7 +124,7 @@ spec:
         logs:
           receivers: [otlp, k8sobjects, filelog]
           processors: [batch]
-          exporters: [loki]
+          exporters: [otlphttp/loki]
         metrics:
           receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics, prometheus]
           processors: [batch, k8sattributes]
