@@ -132,6 +132,7 @@ spec:
     - secretRef:
         name: otel-collector-environment-secret
   hostNetwork: true
+  image: otel/opentelemetry-collector-contrib:latest
   mode: daemonset
   volumeMounts:
     - mountPath: /hostfs
