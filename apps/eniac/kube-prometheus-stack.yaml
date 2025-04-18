@@ -88,6 +88,7 @@ spec:
             hosts:
               - monitoring.kubernetes.local
       prometheusSpec:
+        enableRemoteWriteReceiver: true
         storageSpec:
           volumeClaimTemplate:
             spec:
