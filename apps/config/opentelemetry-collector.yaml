@@ -54,6 +54,9 @@ spec:
         operators:
           - type: container
             id: container-parser
+      jaeger:
+        protocols:
+          grpc:
 
     processors:
       batch:
