@@ -108,9 +108,9 @@ spec:
       otlphttp/loki:
         endpoint: http://loki:3100/otlp
       prometheusremotewrite:
-        endpoint: prometheus-operated:9090/api/v1/write
+        endpoint: prometheus-operated:9090/prometheus/api/v1/otlp/v1/metrics
       otlp/jaeger:
-        endpoint: http://jaeger-collector:4317
+        endpoint: https://jaeger-collector:4317
 
     extensions:
       health_check:
