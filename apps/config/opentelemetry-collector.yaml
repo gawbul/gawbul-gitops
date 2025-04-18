@@ -112,7 +112,7 @@ spec:
           enabled: true
         timeout: 60s
       otlp/jaeger:
-        endpoint: http://jaeger-collector:4318
+        endpoint: https://jaeger-collector:4317
 
     extensions:
       health_check:
