@@ -38,9 +38,9 @@ spec:
     logs:
       access:
         enabled: true
-        addInternals: true
+        addInternals: false
     metrics:
-      addInternals: true
+      addInternals: false
       otlp:
         enabled: true
         grpc:
@@ -48,7 +48,7 @@ spec:
           insecure: true
           endpoint: otel-collector-collector.monitoring.svc.cluster.local:4317
     tracing:
-      addInternals: true
+      addInternals: false
       otlp:
         enabled: true
         grpc:
