@@ -1,0 +1,34 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: plex
+  namespace: default
+spec:
+  interval: 24h
+  url: https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plex-media-server
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: plex-media-server
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: plex
+        namespace: default
+      interval: 12h
+  values:
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      url: plex.kubernetes.local
+      certificateSecret: plex-tls
+    pms:
+      storageClassName: nfs-csi
