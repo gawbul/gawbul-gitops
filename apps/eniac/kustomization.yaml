@@ -8,4 +8,3 @@ resources:
   - jaeger.yaml
   - opentelemetry-operator.yaml
   - reloader.yaml
-  - plex.yaml
