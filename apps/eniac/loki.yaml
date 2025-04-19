@@ -44,8 +44,6 @@ spec:
     minio:
       enabled: true
       clusterDomain: cluster.local
-      persistence:
-        storageClass: nfs-csi
       serviceAccount:
         create: true
         name: "minio-sa"
