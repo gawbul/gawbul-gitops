@@ -138,7 +138,7 @@ spec:
         traces:
           receivers: [otlp, jaeger]
           processors: [batch]
-          exporters: [debug, otlp/jaeger]
+          exporters: [otlp/jaeger]
   envFrom:
     - secretRef:
         name: otel-collector-environment-secret
