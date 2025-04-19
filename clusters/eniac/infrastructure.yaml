@@ -69,7 +69,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: infra-notifications
+    - name: infra-ingress
   interval: 1h
   retryInterval: 1m
   timeout: 5m
