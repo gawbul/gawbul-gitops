@@ -1,0 +1,22 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: flux-alerts
+  namespace: flux-system
+spec:
+  summary: "Cluster addons impacted"
+  eventMetadata:
+    env: "homelab"
+    cluster: "eniac"
+  providerRef:
+    name: discord
+  eventSeverity: info
+  eventSources:
+    - kind: GitRepository
+      name: "*"
+    - kind: Kustomization
+      name: "*"
+    - kind: HelmRelease
+      name: "*"
+    - kind: HelmRepository
+      name: "*"
