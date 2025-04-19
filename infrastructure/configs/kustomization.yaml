@@ -9,3 +9,4 @@ resources:
   - metallb.yaml
   - traefik-secret.yaml
   - plex-tls.yaml
+  - discord-secret.yaml
