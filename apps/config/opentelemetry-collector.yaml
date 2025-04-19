@@ -134,7 +134,7 @@ spec:
         metrics:
           receivers: [otlp, kubeletstats, k8s_cluster, hostmetrics, prometheus]
           processors: [batch, k8sattributes]
-          exporters: [debug, prometheusremotewrite]
+          exporters: [prometheusremotewrite]
         traces:
           receivers: [otlp, jaeger]
           processors: [batch]
