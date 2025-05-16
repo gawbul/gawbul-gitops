@@ -26,9 +26,6 @@ spec:
         type: filesystem
       commonStorageConfig:
         type: filesystem
-      rulerConfig:
-        storage:
-          type: local
       schemaConfig:
         configs:
           - from: "2025-01-01"
