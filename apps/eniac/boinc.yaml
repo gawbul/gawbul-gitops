@@ -1,0 +1,25 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: rpi-boinc
+  namespace: default
+spec:
+  interval: 5m
+  url: https://github.com/gawbul/rpi-boinc
+  ref:
+    branch: main
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: rpi-boinc
+  namespace: default
+spec:
+  interval: 10m
+  targetNamespace: default
+  sourceRef:
+    kind: GitRepository
+    name: rpi-boinc
+  path: "./kustomize"
+  prune: true
