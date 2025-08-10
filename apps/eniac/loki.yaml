@@ -46,6 +46,13 @@ spec:
       ruler:
         enable_api: true
 
+    resultsCache:
+      resources:
+        requests:
+          memory: 1536Mi
+        limits:
+          memory: 1536Mi
+
     minio:
       enabled: true
       clusterDomain: cluster.local
