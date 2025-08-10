@@ -47,7 +47,9 @@ spec:
         enable_api: true
 
     resultsCache:
-      allocatedMemory: 2048
+      persistence:
+        enabled: true
+        storageClass: nfs-csi
 
     minio:
       enabled: true
