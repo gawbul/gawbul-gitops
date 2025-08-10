@@ -47,11 +47,7 @@ spec:
         enable_api: true
 
     resultsCache:
-      resources:
-        requests:
-          memory: 1536Mi
-        limits:
-          memory: 1536Mi
+      allocatedMemory: 2048
 
     minio:
       enabled: true
