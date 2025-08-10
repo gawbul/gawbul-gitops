@@ -47,9 +47,7 @@ spec:
         enable_api: true
 
     resultsCache:
-      persistence:
-        enabled: true
-        storageClass: nfs-csi
+      enabled: false
 
     minio:
       enabled: true
