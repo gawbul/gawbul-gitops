@@ -19,6 +19,8 @@ spec:
     global:
       dnsService: coredns
     loki:
+      image:
+        pullPolicy: Always
       auth_enabled: false
       commonConfig:
         replication_factor: 1
@@ -48,6 +50,10 @@ spec:
 
     resultsCache:
       enabled: false
+
+    lokiCanary:
+      image:
+        pullPolicy: Always
 
     minio:
       enabled: true
