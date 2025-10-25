@@ -42,12 +42,12 @@ spec:
           storageClass: nfs-csi
           size: 8Gi
       image:
-        repository: docker.io/bitnamilegacy/elasticsearch
+        repository: bitnamilegacy/elasticsearch
       sysctlImage:
-        repository: docker.io/bitnamilegacy/os-shell
+        repository: bitnamilegacy/os-shell
       volumePermissions:
         image:
-          repository: docker.io/bitnamilegacy/os-shell
+          repository: bitnamilegacy/os-shell
     collector:
       service:
         otlp:
