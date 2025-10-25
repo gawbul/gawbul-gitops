@@ -41,6 +41,11 @@ spec:
           enabled: true
           storageClass: nfs-csi
           size: 8Gi
+      sysctlImage:
+        repository: docker.io/bitnamilegacy/os-shell
+      volumePermissions:
+        image:
+          repository: docker.io/bitnamilegacy/os-shell
     collector:
       service:
         otlp:
