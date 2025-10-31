@@ -24,6 +24,8 @@ spec:
         replication_factor: 1
       storage:
         type: filesystem
+        bucketNames:
+          chunks: fnord
       commonStorageConfig:
         type: filesystem
       schemaConfig:
