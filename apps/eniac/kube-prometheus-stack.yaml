@@ -86,6 +86,14 @@ spec:
         accessModes:
           - ReadWriteOnce
         size: 20Gi
+      sidecar:
+        dashboards:
+          env:
+            SKIP_TLS_VERIFY: "true"
+        datasources:
+          env:
+            SKIP_TLS_VERIFY: "true"
+            ENABLE_WEB_SERVER: "false"
     prometheus:
       ingress:
         enabled: true
