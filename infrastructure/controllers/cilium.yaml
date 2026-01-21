@@ -1,5 +1,5 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: cilium
@@ -36,7 +36,7 @@ spec:
         name: cilium-operator
     prometheus:
       enabled: true
-    hubbles:
+    hubble:
       enabled: true
       ui:
         enabled: true
