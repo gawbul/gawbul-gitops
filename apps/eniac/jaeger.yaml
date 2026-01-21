@@ -34,12 +34,12 @@ spec:
       data:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClass: nfs-client
           size: 8Gi
       master:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClass: nfs-client
           size: 8Gi
       image:
         repository: bitnamilegacy/elasticsearch
