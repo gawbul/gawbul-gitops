@@ -5,7 +5,7 @@ metadata:
   name: prometheus-community
   namespace: monitoring
 spec:
-  interval: 24h
+  interval: 1h
   url: https://prometheus-community.github.io/helm-charts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -14,7 +14,7 @@ metadata:
   name: kube-prometheus-stack
   namespace: monitoring
 spec:
-  interval: 30m
+  interval: 5m
   chart:
     spec:
       chart: kube-prometheus-stack
@@ -23,7 +23,7 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: monitoring
-      interval: 12h
+      interval: 1h
   values:
     alertmanager:
       ingress:

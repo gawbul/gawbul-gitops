@@ -5,7 +5,7 @@ metadata:
   name: open-telemetry
   namespace: monitoring
 spec:
-  interval: 24h
+  interval: 1h
   url: https://open-telemetry.github.io/opentelemetry-helm-charts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -14,7 +14,7 @@ metadata:
   name: open-telemetry
   namespace: monitoring
 spec:
-  interval: 30m
+  interval: 5m
   chart:
     spec:
       chart: opentelemetry-operator
@@ -23,7 +23,7 @@ spec:
         kind: HelmRepository
         name: open-telemetry
         namespace: monitoring
-      interval: 12h
+      interval: 1h
   values:
     manager:
       collectorImage:

@@ -16,7 +16,7 @@ metadata:
   name: rpi-boinc
   namespace: default
 spec:
-  interval: 1h0m0s
+  interval: 10m
   targetNamespace: default
   sourceRef:
     kind: GitRepository
