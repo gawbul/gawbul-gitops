@@ -63,7 +63,7 @@ spec:
     singleBinary:
       replicas: 1
       persistence:
-        storageClass: nfs-csi
+        storageClass: nfs-client
 
     backend:
       replicas: 0
