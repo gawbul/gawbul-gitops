@@ -44,8 +44,5 @@ spec:
         enabled: true
     ipam:
       mode: "kubernetes"
-    containerRuntime:
-      integration: containerd
-      socketPath: /run/k3s/containerd/containerd.sock
     socketLB:
       enabled: false
