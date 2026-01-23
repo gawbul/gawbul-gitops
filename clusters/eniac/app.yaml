@@ -5,7 +5,7 @@ metadata:
   name: apps
   namespace: flux-system
 spec:
-  interval: 10m0s
+  interval: 1h0m0s
   dependsOn:
     - name: infra-notifications
   sourceRef:
@@ -22,7 +22,7 @@ metadata:
   name: apps-config
   namespace: flux-system
 spec:
-  interval: 10m0s
+  interval: 1h0m0s
   dependsOn:
     - name: apps
   sourceRef:

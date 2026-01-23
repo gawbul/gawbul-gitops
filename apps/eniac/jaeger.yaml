@@ -18,7 +18,7 @@ spec:
   chart:
     spec:
       chart: jaeger
-      version: "3.4.0"
+      version: "3.x"
       sourceRef:
         kind: HelmRepository
         name: jaegertracing
