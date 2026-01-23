@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
   - cert-manager.yaml
   - metallb.yaml
-  - cilium.yaml
   - nfs-provisioner.yaml
