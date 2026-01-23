@@ -5,7 +5,7 @@ metadata:
   name: traefik
   namespace: traefik
 spec:
-  interval: 24h
+  interval: 1h
   url: https://traefik.github.io/charts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -14,7 +14,7 @@ metadata:
   name: traefik
   namespace: traefik
 spec:
-  interval: 30m
+  interval: 5m
   chart:
     spec:
       chart: traefik
@@ -23,7 +23,7 @@ spec:
         kind: HelmRepository
         name: traefik
         namespace: traefik
-      interval: 12h
+      interval: 1h
   values:
     ingressRoute:
       dashboard:
