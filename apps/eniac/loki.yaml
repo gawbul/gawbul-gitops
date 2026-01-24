@@ -25,12 +25,12 @@ spec:
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: loki-minio-secret
+              name: loki-minio
               key: rootUser
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: loki-minio-secret
+              name: loki-minio
               key: rootPassword
       commonConfig:
         replication_factor: 1
@@ -51,7 +51,6 @@ spec:
           admin: admin
         s3:
           endpoint: http://loki-minio.monitoring.svc.cluster.local:9000
-          region: us-east-1
           access_key_id: ${MINIO_ACCESS_KEY}
           secret_access_key: ${MINIO_SECRET_KEY}
           insecure: true
@@ -66,14 +65,8 @@ spec:
 
     minio:
       enabled: true
-      existingSecret: "loki-minio-secret"
-      serviceAccount:
-        create: true
-        name: "minio-sa"
       persistence:
         storageClass: nfs-client
-      volumePermissions:
-        enabled: false
       securityContext:
         runAsUser: 1024
         runAsGroup: 101
@@ -83,6 +76,7 @@ spec:
     singleBinary:
       replicas: 1
       persistence:
+        enabled: true
         storageClass: nfs-client
 
     backend:
