@@ -26,12 +26,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: loki-minio-secret
-              key: root-user
+              key: rootUser
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: loki-minio-secret
-              key: root-password
+              key: rootPassword
       commonConfig:
         replication_factor: 1
       schemaConfig:
@@ -72,11 +72,11 @@ spec:
       persistence:
         storageClass: nfs-client
       volumePermissions:
-        enabled: true
+        enabled: false
       securityContext:
-        runAsUser: 1001
-        runAsGroup: 1001
-        fsGroup: 1001
+        runAsUser: 1024
+        runAsGroup: 101
+        fsGroup: 101
 
     deploymentMode: SingleBinary
     singleBinary:
