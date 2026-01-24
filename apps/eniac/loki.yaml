@@ -26,12 +26,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: loki-minio
-              key: root-user
+              key: rootUser
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: loki-minio
-              key: root-password
+              key: rootPassword
       commonConfig:
         replication_factor: 1
       schemaConfig:
