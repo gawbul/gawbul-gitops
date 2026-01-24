@@ -61,6 +61,14 @@ spec:
       serviceAccount:
         create: true
         name: "minio-sa"
+      persistence:
+        storageClass: nfs-client
+      volumePermissions:
+        enabled: true
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
 
     deploymentMode: SingleBinary
 
