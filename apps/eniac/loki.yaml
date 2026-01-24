@@ -25,13 +25,13 @@ spec:
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: loki-minio-secret
-              key: rootUser
+              name: loki-minio
+              key: root-user
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: loki-minio-secret
-              key: rootPassword
+              name: loki-minio
+              key: root-password
       commonConfig:
         replication_factor: 1
       schemaConfig:
@@ -65,14 +65,8 @@ spec:
 
     minio:
       enabled: true
-      existingSecret: "loki-minio-secret"
-      serviceAccount:
-        create: true
-        name: "minio-sa"
       persistence:
         storageClass: nfs-client
-      volumePermissions:
-        enabled: false
       securityContext:
         runAsUser: 1024
         runAsGroup: 101
@@ -82,6 +76,7 @@ spec:
     singleBinary:
       replicas: 1
       persistence:
+        enabled: true
         storageClass: nfs-client
 
     backend:
