@@ -48,6 +48,10 @@ spec:
       ruler:
         enable_api: true
 
+    gateway:
+      nginxConfig:
+        resolver: "kube-dns.kube-system.svc.cluster.local"
+
     resultsCache:
       enabled: false
 
