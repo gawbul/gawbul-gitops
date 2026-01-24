@@ -26,12 +26,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: loki-minio-secret
-              key: rootUser
+              key: root-user
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: loki-minio-secret
-              key: rootPassword
+              key: root-password
       commonConfig:
         replication_factor: 1
       schemaConfig:
@@ -51,7 +51,6 @@ spec:
           admin: admin
         s3:
           endpoint: http://loki-minio.monitoring.svc.cluster.local:9000
-          # 2. Reference the Environment Variables
           access_key_id: ${MINIO_ACCESS_KEY}
           secret_access_key: ${MINIO_SECRET_KEY}
           insecure: true
