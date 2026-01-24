@@ -18,35 +18,44 @@ spec:
   values:
     global:
       dnsService: coredns
+
     loki:
       auth_enabled: false
+      extraEnv:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: loki-minio-secret
+              key: rootUser
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: loki-minio-secret
+              key: rootPassword
       commonConfig:
         replication_factor: 1
-      storage:
-        type: filesystem
-        bucketNames:
-          chunks: fnord
-      commonStorageConfig:
-        type: filesystem
       schemaConfig:
         configs:
-          - from: "2025-01-01"
+          - from: "2024-01-01"
             store: tsdb
-            object_store: filesystem
+            object_store: s3
             schema: v13
             index:
               prefix: loki_index_
               period: 24h
-      storage_config:
-        filesystem:
-          directory: /tmp/loki/chunks
-      pattern_ingester:
-        enabled: true
-      limits_config:
-        allow_structured_metadata: true
-        volume_enabled: true
-      ruler:
-        enable_api: true
+      storage:
+        type: s3
+        bucketNames:
+          chunks: fnord
+          ruler: ruler
+          admin: admin
+        s3:
+          endpoint: http://loki-minio.monitoring.svc.cluster.local:9000
+          # 2. Reference the Environment Variables
+          access_key_id: ${MINIO_ACCESS_KEY}
+          secret_access_key: ${MINIO_SECRET_KEY}
+          insecure: true
+          s3forcepathstyle: true
 
     gateway:
       nginxConfig:
@@ -57,7 +66,7 @@ spec:
 
     minio:
       enabled: true
-      clusterDomain: cluster.local
+      existingSecret: "loki-minio-secret"
       serviceAccount:
         create: true
         name: "minio-sa"
@@ -71,7 +80,6 @@ spec:
         fsGroup: 1001
 
     deploymentMode: SingleBinary
-
     singleBinary:
       replicas: 1
       persistence:
