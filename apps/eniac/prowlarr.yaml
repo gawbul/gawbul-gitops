@@ -44,9 +44,9 @@ spec:
         enabled: true
         className: traefik
         hosts:
-          - host: media.kubernetes.local
+          - host: prowlarr.media.kubernetes.local
             paths:
-              - path: /prowlarr
+              - path: /
                 service:
                   identifier: main
                   port: http
