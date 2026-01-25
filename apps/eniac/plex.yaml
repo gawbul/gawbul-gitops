@@ -47,6 +47,7 @@ spec:
             fsGroupChangePolicy: "OnRootMismatch"
     service:
       main:
+        controller: main
         type: LoadBalancer
         ports:
           http:
