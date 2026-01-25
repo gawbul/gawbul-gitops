@@ -19,3 +19,5 @@ resources:
   - ollama.yaml
   - recommendarr-secret.yaml
   - recommendarr.yaml
+  - plex-secret.yaml
+  - plex.yaml
