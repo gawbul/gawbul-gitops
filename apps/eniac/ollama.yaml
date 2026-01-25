@@ -32,10 +32,11 @@ spec:
               OLLAMA_KEEP_ALIVE: "24h"
             resources:
               requests:
-                memory: 8Gi
                 cpu: 2000m
+                memory: 8Gi
               limits:
-                memory: 12Gi
+                cpu: 2000m
+                memory: 8Gi
         pod:
           securityContext:
             fsGroup: 1000
@@ -56,7 +57,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pull-llama3-1
+  name: pull-llama3-2
   namespace: media
   annotations:
     "helm.sh/hook": post-install,post-upgrade
@@ -72,5 +73,5 @@ spec:
             - "POST"
             - "http://ollama.media.svc.cluster.local:11434/api/pull"
             - "-d"
-            - '{"name": "llama3.1"}'
+            - '{"name": "llama3.2"}'
       restartPolicy: OnFailure
