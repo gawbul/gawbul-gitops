@@ -26,8 +26,6 @@ spec:
               tag: latest
             env:
               TZ: Europe/London
-              PUID: 1024
-              PGID: 101
               VERSION: docker
               ALLOWED_NETWORKS: "192.168.50.0/24,10.0.0.0/8,172.16.0.0/12"
             envFrom:
@@ -41,8 +39,6 @@ spec:
                 memory: 4000Mi
         pod:
           securityContext:
-            runAsUser: 1024
-            runAsGroup: 101
             fsGroup: 101
             fsGroupChangePolicy: "OnRootMismatch"
     service:
