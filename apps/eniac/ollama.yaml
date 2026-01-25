@@ -15,12 +15,13 @@ spec:
         name: bjw-s-labs
         namespace: media
   values:
+    defaultPodOptions:
+      nodeSelector:
+        workload: ai
     controllers:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-        nodeSelector:
-          workload: ai
         containers:
           main:
             image:
