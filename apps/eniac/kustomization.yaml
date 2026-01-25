@@ -9,7 +9,7 @@ resources:
   - opentelemetry-operator.yaml
   - reloader.yaml
   - media-mounts.yaml
-  - bjw-s-repo.yaml
+  - bjw-s-labs-repo.yaml
   - sabnzbd.yaml
   - sonarr.yaml
   - radarr.yaml
