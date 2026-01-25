@@ -13,8 +13,9 @@ resources:
   - sabnzbd.yaml
   - sonarr.yaml
   - radarr.yaml
-  - readarr.yaml
   - prowlarr.yaml
   - overseerr.yaml
   - tautulli.yaml
   - ollama.yaml
+  - recommendarr-secret.yaml
+  - recommendarr.yaml
