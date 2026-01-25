@@ -17,3 +17,4 @@ resources:
   - prowlarr.yaml
   - overseerr.yaml
   - tautulli.yaml
+  - ollama.yaml

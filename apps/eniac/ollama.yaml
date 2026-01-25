@@ -19,6 +19,8 @@ spec:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
+        nodeSelector:
+          workload: ai
         containers:
           main:
             image:
