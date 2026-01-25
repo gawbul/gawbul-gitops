@@ -22,8 +22,8 @@ spec:
         containers:
           main:
             image:
-              repository: linuxserver/readarr
-              tag: arm64v8-develop
+              repository: ghcr.io/hotio/readarr
+              tag: develop
             env:
               TZ: Europe/London
               PUID: 1024
