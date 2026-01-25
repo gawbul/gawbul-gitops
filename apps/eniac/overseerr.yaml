@@ -1,0 +1,61 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: overseerr
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: media
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: sct/overseerr
+              tag: latest
+            env:
+              TZ: Europe/London
+              LOG_LEVEL: info
+              PUID: 1024
+              PGID: 101
+        pod:
+          securityContext:
+            runAsUser: 1024
+            runAsGroup: 101
+            fsGroup: 101
+            fsGroupChangePolicy: "OnRootMismatch"
+    service:
+      main:
+        ports:
+          http:
+            port: 5055
+    ingress:
+      main:
+        enabled: true
+        className: traefik
+        hosts:
+          - host: media.kubernetes.local
+            paths:
+              - path: /overseerr
+                service:
+                  identifier: main
+                  port: http
+    persistence:
+      config:
+        enabled: true
+        storageClass: local-path
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        globalMounts:
+          - path: /app/config

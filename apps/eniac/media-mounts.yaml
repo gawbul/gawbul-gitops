@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-downloads-pv
+spec:
+  capacity:
+    storage: 7Ti
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-manual
+  nfs:
+    server: 192.168.50.2
+    path: /volume1/downloads
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-downloads-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-manual
+  volumeName: nfs-downloads-pv
+  resources:
+    requests:
+      storage: 7Ti
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-movies-pv
+spec:
+  capacity:
+    storage: 7Ti
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-manual
+  nfs:
+    server: 192.168.50.2
+    path: /volume1/movies
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-movies-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-manual
+  volumeName: nfs-movies-pv
+  resources:
+    requests:
+      storage: 7Ti
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-tv-pv
+spec:
+  capacity:
+    storage: 7Ti
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-manual
+  nfs:
+    server: 192.168.50.2
+    path: /volume1/tv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-tv-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-manual
+  volumeName: nfs-tv-pv
+  resources:
+    requests:
+      storage: 7Ti
