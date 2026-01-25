@@ -23,7 +23,7 @@ spec:
           main:
             image:
               repository: lscr.io/linuxserver/readarr
-              tag: develop
+              tag: latest
             env:
               TZ: Europe/London
               PUID: 1024
