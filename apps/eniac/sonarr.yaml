@@ -44,9 +44,9 @@ spec:
         enabled: true
         className: traefik
         hosts:
-          - host: media.kubernetes.local # Update this to your internal DNS
+          - host: sonarr.media.kubernetes.local # Update this to your internal DNS
             paths:
-              - path: /sonarr
+              - path: /
                 service:
                   identifier: main
                   port: http

@@ -44,9 +44,9 @@ spec:
         enabled: true
         className: traefik
         hosts:
-          - host: media.kubernetes.local
+          - host: radarr.media.kubernetes.local
             paths:
-              - path: /radarr
+              - path: /
                 service:
                   identifier: main
                   port: http
