@@ -13,6 +13,7 @@ resources:
   - sabnzbd.yaml
   - sonarr.yaml
   - radarr.yaml
+  - readarr.yaml
   - prowlarr.yaml
   - overseerr.yaml
   - tautulli.yaml
