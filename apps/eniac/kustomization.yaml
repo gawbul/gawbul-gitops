@@ -10,7 +10,7 @@ resources:
   - reloader.yaml
   - media-mounts.yaml
   - bjw-s-repo.yaml
-  - sabznbd.yaml
+  - sabnzbd.yaml
   - sonarr.yaml
   - radarr.yaml
   - prowlarr.yaml
