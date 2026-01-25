@@ -22,7 +22,7 @@ spec:
         containers:
           main:
             image:
-              repository: lscr.io/linuxserver/readarr
+              repository: linuxserver/readarr
               tag: latest
             env:
               TZ: Europe/London
