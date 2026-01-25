@@ -22,7 +22,7 @@ spec:
         containers:
           main:
             image:
-              repository: sct/overseerr
+              repository: linuxserver/overseerr
               tag: latest
             env:
               TZ: Europe/London
