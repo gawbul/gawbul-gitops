@@ -52,3 +52,25 @@ spec:
         size: 20Gi
         globalMounts:
           - path: /root/.ollama
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pull-llama3-1
+  namespace: media
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+spec:
+  template:
+    spec:
+      containers:
+        - name: curler
+          image: curlimages/curl
+          command:
+            - "curl"
+            - "-X"
+            - "POST"
+            - "http://ollama.media.svc.cluster.local:11434/api/pull"
+            - "-d"
+            - '{"name": "llama3.1"}'
+      restartPolicy: OnFailure

@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: readarr
+  name: recommendarr
   namespace: media
 spec:
   interval: 5m
@@ -22,31 +22,38 @@ spec:
         containers:
           main:
             image:
-              repository: linuxserver/readarr
+              repository: tannermiddleton/recommendarr
               tag: latest
             env:
               TZ: Europe/London
-              PUID: 1024
-              PGID: 101
+              PORT: 3000
+              NODE_ENV: production
+              PUBLIC_URL: https://recommendarr.media.kubernetes.local
+              OPENAI_BASE_URL: "http://ollama.media.svc.cluster.local:11434/v1"
+              OPENAI_MODEL: "llama3.1"
+              OPENAI_API_KEY: "ollama"
+            envFrom:
+              - secretRef:
+                  name: recommendarr-secret
         pod:
           securityContext:
-            runAsUser: 1024
-            runAsGroup: 101
-            fsGroup: 101
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
     service:
       main:
         ports:
           http:
-            port: 8787
+            port: 3000
     ingress:
       main:
         enabled: true
         className: traefik
         hosts:
-          - host: media.kubernetes.local
+          - host: recommendarr.media.kubernetes.local
             paths:
-              - path: /readarr
+              - path: /
                 service:
                   identifier: main
                   port: http
@@ -57,14 +64,4 @@ spec:
         accessMode: ReadWriteOnce
         size: 2Gi
         globalMounts:
-          - path: /config
-      books:
-        enabled: true
-        existingClaim: media-books-pvc
-        globalMounts:
-          - path: /books
-      downloads:
-        enabled: true
-        existingClaim: media-downloads-pvc
-        globalMounts:
-          - path: /downloads
+          - path: /app/server/data
