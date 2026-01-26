@@ -26,6 +26,10 @@ spec:
   values:
     dnsmasq:
       customDnsEntries:
+        - address=/eniac-node1.home.gawbul.io/192.168.50.4
+        - address=/eniac-node2.home.gawbul.io/192.168.50.5
+        - address=/eniac-node3.home.gawbul.io/192.168.50.6
+        - address=/eniac-node4.home.gawbul.io/192.168.50.7
         - address=/plex.home.gawbul.io/192.168.50.205
         - address=/.home.gawbul.io/192.168.50.204
     persistentVolumeClaim:
@@ -73,6 +77,10 @@ spec:
   values:
     dnsmasq:
       customDnsEntries:
+        - address=/eniac-node1.home.gawbul.io/192.168.50.4
+        - address=/eniac-node2.home.gawbul.io/192.168.50.5
+        - address=/eniac-node3.home.gawbul.io/192.168.50.6
+        - address=/eniac-node4.home.gawbul.io/192.168.50.7
         - address=/plex.home.gawbul.io/192.168.50.205
         - address=/.home.gawbul.io/192.168.50.204
     persistentVolumeClaim:
