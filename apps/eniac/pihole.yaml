@@ -34,8 +34,6 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /etc/pihole
-          - name: dnsmasq
-            mountPath: /etc/dnsmasq.d
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
@@ -92,8 +90,6 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /etc/pihole
-          - name: dnsmasq
-            mountPath: /etc/dnsmasq.d
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
