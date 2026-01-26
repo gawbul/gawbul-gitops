@@ -5,3 +5,4 @@ resources:
   - gawbul-namespace.yaml
   - grafana.yaml
   - media-namespace.yaml
+  - networking-namespace.yaml

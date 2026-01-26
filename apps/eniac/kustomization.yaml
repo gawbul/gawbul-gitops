@@ -21,3 +21,5 @@ resources:
   - recommendarr.yaml
   - plex-secret.yaml
   - plex.yaml
+  - pihole-secret.yaml
+  - pihole.yaml
