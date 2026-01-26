@@ -28,7 +28,7 @@ spec:
               TZ: Europe/London
               PUID: 1024
               PGID: 101
-              HOST_WHITELIST_ENTRIES: "media.kubernetes.local, sabnzbd, sabnzbd.media, sabnzbd.media.svc.cluster.local"
+              HOST_WHITELIST_ENTRIES: "home.gawbul.io, sabnzbd, sabnzbd.media, sabnzbd.media.svc.cluster.local"
         pod:
           securityContext:
             runAsUser: 1024
@@ -44,13 +44,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: sabnzbd.media.kubernetes.local
+          - host: sabnzbd.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - sabnzbd.home.gawbul.io
+            secretName: sabnzbd-tls
     persistence:
       config:
         enabled: true

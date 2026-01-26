@@ -30,13 +30,13 @@ spec:
         enabled: true
         ingressClassName: traefik
         hosts:
-          - monitoring.kubernetes.local
+          - monitoring.home.gawbul.io
         paths:
           - /alertmanager
         tls:
           - secretName: monitoring-tls
             hosts:
-              - monitoring.kubernetes.local
+              - monitoring.home.gawbul.io
       service:
         clusterPort: 9094
       alertmanagerSpec:
@@ -71,12 +71,12 @@ spec:
         enabled: true
         ingressClassName: traefik
         hosts:
-          - monitoring.kubernetes.local
+          - monitoring.home.gawbul.io
         path: /grafana
         tls:
           - secretName: monitoring-tls
             hosts:
-              - monitoring.kubernetes.local
+              - monitoring.home.gawbul.io
       initChownData:
         enabled: false
       persistence:
@@ -99,12 +99,12 @@ spec:
         enabled: true
         ingressClassName: traefik
         hosts:
-          - monitoring.kubernetes.local
+          - monitoring.home.gawbul.io
         path: /prometheus
         tls:
           - secretName: monitoring-tls
             hosts:
-              - monitoring.kubernetes.local
+              - monitoring.home.gawbul.io
       prometheusSpec:
         additionalArgs:
           - name: web.enable-otlp-receiver

@@ -53,14 +53,19 @@ spec:
         enabled: true
         className: traefik
         annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
           traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
         hosts:
-          - host: plex.media.kubernetes.local
+          - host: plex.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - plex.home.gawbul.io
+            secretName: plex-tls
     persistence:
       config:
         enabled: true

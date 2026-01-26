@@ -28,7 +28,7 @@ spec:
               TZ: Europe/London
               PORT: 3000
               NODE_ENV: production
-              PUBLIC_URL: https://recommendarr.media.kubernetes.local
+              PUBLIC_URL: https://recommendarr.home.gawbul.io
               OPENAI_BASE_URL: "http://ollama.media.svc.cluster.local:11434/v1"
               OPENAI_MODEL: "llama3.1"
               OPENAI_API_KEY: "ollama"
@@ -50,13 +50,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: recommendarr.media.kubernetes.local
+          - host: recommendarr.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - recommendarr.home.gawbul.io
+            secretName: recommendarr-tls
     persistence:
       config:
         enabled: true

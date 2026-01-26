@@ -1,11 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitoring
-  labels:
-    toolkit.fluxcd.io/tenant: gawbul
----
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -13,26 +6,8 @@ metadata:
   namespace: monitoring
 spec:
   secretName: monitoring-tls
-  privateKey:
-    algorithm: RSA
-    encoding: PKCS1
-    size: 2048
-  duration: 2160h
-  renewBefore: 360h
-  isCA: false
-  usages:
-    - server auth
-    - client auth
-  subject:
-    organizations:
-      - cert-manager
-  commonName: monitoring.kubernetes.local
   dnsNames:
-    - monitoring.kubernetes.local
-    - "*.monitoring.svc.cluster.local"
-  emailAddresses:
-    - gawbul@gmail.com
+    - monitoring.home.gawbul.io
   issuerRef:
-    name: selfsigned-issuer
+    name: letsencrypt
     kind: ClusterIssuer
-    group: cert-manager.io

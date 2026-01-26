@@ -44,13 +44,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: overseerr.media.kubernetes.local
+          - host: overseerr.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - overseerr.home.gawbul.io
+            secretName: overseerr-tls
     persistence:
       config:
         enabled: true
