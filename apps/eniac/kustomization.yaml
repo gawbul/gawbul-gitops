@@ -23,3 +23,6 @@ resources:
   - recommendarr.yaml
   - plex-secret.yaml
   - plex.yaml
+  - zurg-secret.yaml
+  - zurg.yaml
+  - rdt-client.yaml

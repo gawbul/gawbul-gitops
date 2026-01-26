@@ -1,0 +1,78 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: zurg
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-labs
+        namespace: media
+  values:
+    controllers:
+      zurg:
+        type: daemonset
+        containers:
+          app:
+            image:
+              repository: ghcr.io/debridmediamanager/zurg-testing
+              tag: latest
+            env:
+              ZURG_HOST: "0.0.0.0"
+              ZURG_PORT: "9999"
+              ZURG_RDTORRENT_NAME: "true"
+              ZURG_RETAIN_FOLDER_NAME_EXTENSION: "true"
+            envFrom:
+              - secretRef:
+                  name: zurg-secret
+          rclone:
+            image:
+              repository: rclone/rclone
+              tag: latest
+            securityContext:
+              privileged: true
+              capabilities: { add: ["SYS_ADMIN"] }
+            args:
+              - "mount"
+              - ":webdav,url=http://localhost:9999:"
+              - "/data/mount"
+              - "--allow-other"
+              - "--vfs-cache-mode=full"
+              - "--cache-dir=/cache"
+              - "--vfs-cache-max-size=2G"
+              - "--vfs-read-chunk-size=32M"
+              - "--vfs-read-chunk-size-limit=512M"
+              - "--buffer-size=32M"
+              - "--no-modtime"
+            lifecycle:
+              preStop:
+                exec:
+                  command: ["fusermount", "-uz", "/data/mount"]
+            volumeMounts:
+              - name: host-mount
+                mountPath: /data/mount
+                mountPropagation: Bidirectional
+              - name: ram-cache
+                mountPath: /cache
+    service:
+      app:
+        controller: zurg
+        ports:
+          http:
+            port: 9999
+    persistence:
+      host-mount:
+        type: hostPath
+        hostPath: /mnt/zurg
+        hostPathType: DirectoryOrCreate
+        globalMounts: []
+      ram-cache:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 3Gi
