@@ -24,10 +24,18 @@ spec:
         name: mojo2600
         namespace: networking
   values:
-    podSecurityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
-      fsGroup: 1000
+    extraInitContainers:
+      - name: fix-permissions
+        image: busybox:latest
+        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole /etc/dnsmasq.d"]
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+        volumeMounts:
+          - name: config
+            mountPath: /etc/pihole
+          - name: dnsmasq
+            mountPath: /etc/dnsmasq.d
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
@@ -74,10 +82,18 @@ spec:
         name: mojo2600
         namespace: networking
   values:
-    podSecurityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
-      fsGroup: 1000
+    extraInitContainers:
+      - name: fix-permissions
+        image: busybox:latest
+        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole /etc/dnsmasq.d"]
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+        volumeMounts:
+          - name: config
+            mountPath: /etc/pihole
+          - name: dnsmasq
+            mountPath: /etc/dnsmasq.d
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
