@@ -27,7 +27,7 @@ spec:
     extraInitContainers:
       - name: fix-permissions
         image: busybox:latest
-        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole /etc/dnsmasq.d"]
+        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole"]
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
@@ -84,7 +84,7 @@ spec:
     extraInitContainers:
       - name: fix-permissions
         image: busybox:latest
-        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole /etc/dnsmasq.d"]
+        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole"]
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
