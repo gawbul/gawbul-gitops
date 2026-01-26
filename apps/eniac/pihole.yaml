@@ -41,6 +41,7 @@ spec:
         - address=/.home.gawbul.io/192.168.50.204
     persistentVolumeClaim:
       enabled: true
+      storageClassName: "local-path"
       accessModes:
         - ReadWriteOnce
       size: 2Gi
@@ -98,6 +99,7 @@ spec:
         - address=/.home.gawbul.io/192.168.50.204
     persistentVolumeClaim:
       enabled: true
+      storageClassName: "local-path"
       accessModes:
         - ReadWriteOnce
       size: 2Gi
