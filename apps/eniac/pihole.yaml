@@ -24,6 +24,10 @@ spec:
         name: mojo2600
         namespace: networking
   values:
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
@@ -70,6 +74,10 @@ spec:
         name: mojo2600
         namespace: networking
   values:
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
