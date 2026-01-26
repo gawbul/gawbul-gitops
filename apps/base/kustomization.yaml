@@ -6,3 +6,4 @@ resources:
   - grafana.yaml
   - media-namespace.yaml
   - networking-namespace.yaml
+  - monitoring-namespace.yaml
