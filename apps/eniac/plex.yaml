@@ -57,7 +57,6 @@ spec:
         className: traefik
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt
-          traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
         hosts:
           - host: plex.home.gawbul.io
             paths:
