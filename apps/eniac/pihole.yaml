@@ -31,6 +31,7 @@ spec:
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
+          privileged: true
         volumeMounts:
           - name: config
             mountPath: /etc/pihole
@@ -87,6 +88,7 @@ spec:
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
+          privileged: true
         volumeMounts:
           - name: config
             mountPath: /etc/pihole
