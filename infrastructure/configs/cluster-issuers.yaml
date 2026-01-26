@@ -5,19 +5,17 @@ metadata:
   name: letsencrypt
 spec:
   acme:
-    email: gawbul@gmail.com
-    # The server is replaced in /clusters/eniac/infrastructure.yaml
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: steve@gawbul.io
     privateKeySecretRef:
-      name: letsencrypt-traefik
+      name: letsencrypt
     solvers:
-      - http01:
-          ingress:
-            ingressClassName: traefik
----
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
+    - selector:
+        dnsZones:
+          - "gawbul.io"
+      dns01:
+        cloudflare:
+          email: steve@gawbul.io
+          apiTokenSecretRef:
+            name: cloudflare-api-token
+            key: api-token

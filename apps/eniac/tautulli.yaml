@@ -43,13 +43,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: tautulli.media.kubernetes.local
+          - host: tautulli.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - tautulli.home.gawbul.io
+            secretName: tautulli-tls
     persistence:
       config:
         enabled: true

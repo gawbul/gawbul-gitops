@@ -64,8 +64,8 @@ spec:
         enabled: true
         ingressClassName: traefik
         hosts:
-          - monitoring.kubernetes.local
+          - monitoring.home.gawbul.io
         tls:
           - secretName: monitoring-tls
             host:
-              - monitoring.kubernetes.local
+              - monitoring.home.gawbul.io

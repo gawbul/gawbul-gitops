@@ -28,13 +28,18 @@ spec:
     ingressRoute:
       dashboard:
         enabled: true
-        matchRule: Host(`traefik.kubernetes.local`)
+        matchRule: Host(`traefik.home.gawbul.io`)
         entryPoints:
           - websecure
         middlewares:
           - name: traefik-dashboard-auth
         tls:
           secretName: traefik-tls
+    service:
+      type: LoadBalancer
+      annotations:
+        metallb.universe.tf/loadBalancerIPs: "192.168.50.204"
+      loadBalancerIP: "192.168.50.204"
     logs:
       access:
         enabled: true

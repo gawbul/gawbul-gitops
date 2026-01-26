@@ -43,13 +43,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: radarr.media.kubernetes.local
+          - host: radarr.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - radarr.home.gawbul.io
+            secretName: radarr-tls
     persistence:
       config:
         enabled: true

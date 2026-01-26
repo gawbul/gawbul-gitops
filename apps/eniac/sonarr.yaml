@@ -43,13 +43,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: sonarr.media.kubernetes.local # Update this to your internal DNS
+          - host: sonarr.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - sonarr.home.gawbul.io
+            secretName: sonarr-tls
     persistence:
       config:
         enabled: true

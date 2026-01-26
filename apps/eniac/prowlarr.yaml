@@ -43,13 +43,19 @@ spec:
       main:
         enabled: true
         className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-          - host: prowlarr.media.kubernetes.local
+          - host: prowlarr.home.gawbul.io
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
+        tls:
+          - hosts:
+              - prowlarr.home.gawbul.io
+            secretName: prowlarr-tls
     persistence:
       config:
         enabled: true
