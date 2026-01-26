@@ -24,17 +24,6 @@ spec:
         name: mojo2600
         namespace: networking
   values:
-    extraInitContainers:
-      - name: fix-permissions
-        image: busybox:latest
-        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole"]
-        securityContext:
-          runAsUser: 0
-          runAsNonRoot: false
-          privileged: true
-        volumeMounts:
-          - name: config
-            mountPath: /etc/pihole
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
@@ -82,17 +71,6 @@ spec:
         name: mojo2600
         namespace: networking
   values:
-    extraInitContainers:
-      - name: fix-permissions
-        image: busybox:latest
-        command: ["sh", "-c", "chown -R 1000:1000 /etc/pihole"]
-        securityContext:
-          runAsUser: 0
-          runAsNonRoot: false
-          privileged: true
-        volumeMounts:
-          - name: config
-            mountPath: /etc/pihole
     dnsmasq:
       customDnsEntries:
         - address=/plex.home.gawbul.io/192.168.50.205
