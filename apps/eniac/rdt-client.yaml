@@ -1,0 +1,75 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rdt-client
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-labs
+        namespace: media
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: rogerfar/rdt-client
+              tag: latest
+            env:
+              RDT_REALDEBRID_URL: "http://zurg.media.svc.cluster.local:9999"
+              RDT_RCLONE_MOUNT_PATH: "/data/zurg"
+            envFrom:
+              - secretRef:
+                  name: zurg-secret
+    service:
+      main:
+        ports:
+          http:
+            port: 6500
+    ingress:
+      main:
+        enabled: true
+        className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+        hosts:
+          - host: rdt-client.home.gawbul.io
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - hosts:
+              - rdt-client.home.gawbul.io
+            secretName: rdt-client-tls
+    persistence:
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: local-path
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        globalMounts:
+          - path: /data/db
+      zurg-view:
+        type: hostPath
+        hostPath: /mnt/zurg
+        globalMounts:
+          - path: /data/zurg
+      media-library:
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: ""
+        volumeName: nfs-downloads-pv
+        accessMode: ReadWriteMany
+        size: 7Ti
+        globalMounts:
+          - path: /data/downloads
