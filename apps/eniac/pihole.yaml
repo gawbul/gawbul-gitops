@@ -11,7 +11,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: pihole
+  name: pihole-primary
   namespace: networking
 spec:
   interval: 5m
@@ -26,6 +26,7 @@ spec:
   values:
     dnsmasq:
       customDnsEntries:
+        - address=/plex.home.gawbul.io/192.168.50.205
         - address=/.home.gawbul.io/192.168.50.204
     persistentVolumeClaim:
       enabled: true
@@ -36,7 +37,7 @@ spec:
       type: LoadBalancer
       loadBalancerIP: "192.168.50.206"
       annotations:
-        metallb.universe.tf/allow-shared-ip: "pihole-dns"
+        metallb.universe.tf/allow-shared-ip: "pihole-primary"
     serviceWeb:
       type: ClusterIP
     ingress:
@@ -45,10 +46,66 @@ spec:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
       hosts:
-        - pihole.home.gawbul.io
+        - pihole-primary.home.gawbul.io
       tls:
-        - secretName: pihole-tls
+        - secretName: pihole-primary-tls
           hosts:
-            - pihole.home.gawbul.io
+            - pihole-primary.home.gawbul.io
+    admin:
+      existingSecret: pihole-admin-secret
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pihole-secondary
+  namespace: networking
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: pihole
+      version: "2.35.0"
+      sourceRef:
+        kind: HelmRepository
+        name: mojo2600
+        namespace: networking
+  values:
+    dnsmasq:
+      customDnsEntries:
+        - address=/plex.home.gawbul.io/192.168.50.205
+        - address=/.home.gawbul.io/192.168.50.204
+    persistentVolumeClaim:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      size: 2Gi
+    serviceDns:
+      type: LoadBalancer
+      loadBalancerIP: "192.168.50.207"
+      annotations:
+        metallb.universe.tf/allow-shared-ip: "pihole-secondary"
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                    - pihole-primary
+            topologyKey: "kubernetes.io/hostname"
+    serviceWeb:
+      type: ClusterIP
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      hosts:
+        - pihole-secondary.home.gawbul.io
+      tls:
+        - secretName: pihole-secondary-tls
+          hosts:
+            - pihole-secondary.home.gawbul.io
     admin:
       existingSecret: pihole-admin-secret
