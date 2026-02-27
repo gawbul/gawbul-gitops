@@ -26,8 +26,10 @@ spec:
         namespace: media
   values:
     extraEnv:
-      TZ: Europe/London
-      LOG_LEVEL: info
+      - name: TZ
+        value: Europe/London
+      - name: LOG_LEVEL
+        value: info
     podAnnotations:
       reloader.stakater.com/auto: "true"
     podSecurityContext:
