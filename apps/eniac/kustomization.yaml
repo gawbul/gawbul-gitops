@@ -17,6 +17,7 @@ resources:
   - radarr.yaml
   - prowlarr.yaml
   - overseerr.yaml
+  - seerr.yaml
   - tautulli.yaml
   - ollama.yaml
   - recommendarr-secret.yaml
