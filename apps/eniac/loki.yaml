@@ -84,7 +84,7 @@ spec:
           command:
             - sh
             - -c
-            - rm -rf /var/loki/tsdb-shipper-active/wal/*
+            - find /var/loki/tsdb-shipper-active/wal -mindepth 1 -delete 2>/dev/null; true
           volumeMounts:
             - name: storage
               mountPath: /var/loki
