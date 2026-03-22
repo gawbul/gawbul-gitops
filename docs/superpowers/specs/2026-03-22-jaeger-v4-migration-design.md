@@ -15,178 +15,284 @@ The Jaeger Helm chart is currently pinned to `3.x` (Jaeger v1), which deploys se
 
 ### Decisions
 
-- Switch storage from Elasticsearch to **Badger** (embedded, no external dependency)
-- Pin chart to **4.6.x** (chart is marked experimental)
-- **Historical traces will be lost** (acceptable)
-- Use **local-path** storageClass for Badger (not nfs-client — Badger uses `flock` which is unreliable on NFS)
+- Keep **Elasticsearch** as storage backend (deployed separately via ECK operator)
+- Pin Jaeger chart to **4.6.x** (chart is marked experimental)
+- **Historical traces will be lost** (acceptable — index format changes between v1 and v2)
+- Use **ECK (Elastic Cloud on Kubernetes)** operator to manage Elasticsearch
+- Use **nfs-client** storageClass for ES data (cluster runs on Raspberry Pis with SD cards — avoid local writes)
+- **Single-node** Elasticsearch deployment (sufficient for home lab tracing)
 
 ## Design
 
-### Files Modified
+### New Infrastructure: ECK Operator
 
-#### 1. `apps/eniac/jaeger.yaml` — Full Rewrite
+The ECK operator is deployed as an infrastructure controller (same pattern as cert-manager, MetalLB).
 
-The HelmRepository remains unchanged. The HelmRelease values are completely replaced.
-
-**Chart version**: `"4.6.x"`
-
-**New values structure**:
+#### `infrastructure/base/elastic-system-namespace.yaml`
 
 ```yaml
-jaeger:
-  ingress:
-    enabled: true
-    ingressClassName: traefik
-    pathType: Prefix
-    path: /jaeger
-    hosts:
-      - monitoring.home.gawbul.io
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic-system
+```
+
+#### `infrastructure/controllers/eck-operator.yaml`
+
+```yaml
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: elastic
+  namespace: elastic-system
+spec:
+  interval: 1h
+  url: https://helm.elastic.co
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: eck-operator
+  namespace: elastic-system
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: eck-operator
+      version: "3.x"
+      sourceRef:
+        kind: HelmRepository
+        name: elastic
+        namespace: elastic-system
+      interval: 1h
+  values:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 150Mi
+```
+
+Update `infrastructure/base/kustomization.yaml` to add the namespace.
+Update `infrastructure/controllers/kustomization.yaml` to add the operator.
+
+### New Application: Elasticsearch CR
+
+#### `apps/eniac/elasticsearch.yaml`
+
+A single-node Elasticsearch managed by ECK, in the monitoring namespace.
+
+```yaml
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: jaeger
+  namespace: monitoring
+spec:
+  version: "8.17.0"
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.store.allow_mmap: false
+        cluster.routing.allocation.disk.threshold_enabled: false
+        xpack.security.authc.anonymous.username: anonymous
+        xpack.security.authc.anonymous.roles: superuser
+        xpack.security.authc.anonymous.authz_exception: false
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms512m -Xmx512m"
+              resources:
+                requests:
+                  memory: "1Gi"
+                  cpu: "500m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1"
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: nfs-client
+            resources:
+              requests:
+                storage: 8Gi
+  http:
     tls:
-      - secretName: monitoring-tls
+      selfSignedCertificate:
+        disabled: true
+```
+
+Key configuration:
+- `node.store.allow_mmap: false` — required on Raspberry Pi (insufficient virtual address space)
+- Anonymous superuser access — avoids credential management for internal Jaeger use
+- HTTP TLS disabled — plain HTTP for internal cluster communication
+- 512MB heap pinned — appropriate for Pi with 4-8GB shared RAM
+- nfs-client storage — avoids SD card wear
+
+Service URL: `http://jaeger-es-http.monitoring.svc.cluster.local:9200`
+
+Update `apps/eniac/kustomization.yaml` to add elasticsearch.yaml.
+
+### Modified: `apps/eniac/jaeger.yaml`
+
+The HelmRepository remains unchanged. The HelmRelease changes:
+
+- **Chart version**: `"4.6.x"` (unchanged from previous commit)
+- **Remove**: `postRenderers` (no longer need Badger volume mount)
+- **Remove**: `extraObjects` (no longer need Badger PVC)
+- **Change**: `esIndexCleaner.enabled: true` with 7-day retention
+- **Change**: `esRollover.enabled: false`, `esLookback.enabled: false`
+- **Change**: `storage` section for ES maintenance jobs
+- **Change**: `userconfig.extensions.jaeger_storage` — Elasticsearch backend instead of Badger
+
+```yaml
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jaeger
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: jaeger
+      version: "4.6.x"
+      sourceRef:
+        kind: HelmRepository
+        name: jaegertracing
+        namespace: monitoring
+      interval: 1h
+  values:
+    jaeger:
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        pathType: Prefix
+        path: /jaeger
         hosts:
           - monitoring.home.gawbul.io
-
-# Disable ES maintenance jobs (not using Elasticsearch)
-esIndexCleaner:
-  enabled: false
-esRollover:
-  enabled: false
-esLookback:
-  enabled: false
-
-# PVC for Badger data (chart has no native persistence support)
-extraObjects:
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: jaeger-badger-data
-      namespace: monitoring
-    spec:
-      storageClassName: local-path
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 8Gi
-
-userconfig:
-  extensions:
-    healthcheckv2:
-      use_v2: true
-      http: {}
-    jaeger_storage:
-      backends:
-        primary_store:
-          badger:
-            directories:
-              keys: /badger/data/keys
-              values: /badger/data/values
-            maintenance_interval: 5m
-    jaeger_query:
-      base_path: /jaeger
-      storage:
-        traces: primary_store
-
-  receivers:
-    otlp:
-      protocols:
-        grpc:
-          endpoint: 0.0.0.0:4317
-        http:
-          endpoint: 0.0.0.0:4318
-
-  processors:
-    batch: {}
-
-  exporters:
-    jaeger_storage_exporter:
-      trace_storage: primary_store
-
-  service:
-    extensions: [healthcheckv2, jaeger_storage, jaeger_query]
-    pipelines:
-      traces:
-        receivers: [otlp]
-        processors: [batch]
-        exporters: [jaeger_storage_exporter]
-    telemetry:
-      metrics:
-        level: detailed
-        readers:
-          - pull:
-              exporter:
-                prometheus:
-                  host: 0.0.0.0
-                  port: 8888
+        tls:
+          - secretName: monitoring-tls
+            hosts:
+              - monitoring.home.gawbul.io
+    storage:
+      type: elasticsearch
+      elasticsearch:
+        host: jaeger-es-http.monitoring.svc.cluster.local
+        port: 9200
+        scheme: http
+    esIndexCleaner:
+      enabled: true
+      schedule: "55 23 * * *"
+      numberOfDays: 7
+    esRollover:
+      enabled: false
+    esLookback:
+      enabled: false
+    userconfig:
+      extensions:
+        healthcheckv2:
+          use_v2: true
+          http: {}
+        jaeger_storage:
+          backends:
+            primary_store:
+              elasticsearch:
+                server_urls:
+                  - http://jaeger-es-http.monitoring.svc.cluster.local:9200
+                index_prefix: jaeger
+        jaeger_query:
+          base_path: /jaeger
+          storage:
+            traces: primary_store
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+      processors:
+        batch: {}
+      exporters:
+        jaeger_storage_exporter:
+          trace_storage: primary_store
+      service:
+        extensions:
+          - healthcheckv2
+          - jaeger_storage
+          - jaeger_query
+        pipelines:
+          traces:
+            receivers:
+              - otlp
+            processors:
+              - batch
+            exporters:
+              - jaeger_storage_exporter
+        telemetry:
+          metrics:
+            level: detailed
+            readers:
+              - pull:
+                  exporter:
+                    prometheus:
+                      host: 0.0.0.0
+                      port: 8888
 ```
 
-**Mounting the PVC**: The chart does not support `extraVolumes`/`extraVolumeMounts`. A FluxCD `postRenderers` Kustomize patch is used on the HelmRelease to inject the volume and volumeMount into the rendered Deployment:
+### Modified: `apps/config/opentelemetry-collector.yaml`
 
-```yaml
-spec:
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: jaeger
-            patch: |
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: badger-data
-                  persistentVolumeClaim:
-                    claimName: jaeger-badger-data
-              - op: add
-                path: /spec/template/spec/containers/0/volumeMounts/-
-                value:
-                  name: badger-data
-                  mountPath: /badger/data
-```
-
-**Removed sections**: `provisionDataStore`, `storage`, `elasticsearch`, `collector`, `query`.
-
-#### 2. `apps/config/opentelemetry-collector.yaml` — Endpoint Rename
-
-Line 117: Change `http://jaeger-collector:4317` to `http://jaeger:4317`.
-
-The unified Jaeger v2 service is named after the HelmRelease (`jaeger`) rather than having component-specific service names.
-
-**Note**: The `jaeger` receiver (lines 56-58) in the OTel Collector config is unrelated to the Jaeger backend — it receives incoming traces in Jaeger Thrift/gRPC format from applications that use the legacy Jaeger SDK. This receiver remains valid and unchanged.
+Line 117: Change `http://jaeger-collector:4317` to `http://jaeger:4317` (already committed).
 
 ### Other References — No Changes Needed
 
 - **Grafana `JAEGER_AGENT_PORT: "5775"`** (`apps/eniac/kube-prometheus-stack.yaml:65`): The unified Jaeger v2 binary still exposes port 5775 for legacy Jaeger agent protocol. No change needed.
-- **Current `tls` config bug**: The existing jaeger.yaml has `tls[0].host` (singular) instead of `hosts` (plural). The new config corrects this to use the standard `hosts` field.
+- **OTel Collector `jaeger` receiver** (lines 56-58): Receives incoming Jaeger Thrift/gRPC traces from applications — unrelated to the backend. No change needed.
 
 ### What Gets Removed from the Cluster
 
-After FluxCD reconciles:
-
 - Bitnami Elasticsearch StatefulSets (master + data) and their PVCs
-- Separate collector and query Deployments
-- Separate collector and query Services
+- Separate collector and query Deployments and Services
 - References to `bitnamilegacy/*` container images
+- Badger PVC (from previous commit, never deployed)
 
 ### What Gets Created
 
+- `elastic-system` namespace with ECK operator
+- Single-node Elasticsearch managed by ECK in `monitoring` namespace
 - Single Jaeger Deployment running the unified `jaegertracing/jaeger` binary
-- Single Service exposing all ports (OTLP 4317/4318, query UI 16686, health 13133, agent 5775/6831/6832)
-- PVC for Badger data (8Gi, local-path) via `extraObjects`
-- Volume mount patched in via FluxCD `postRenderers`
+- Single Jaeger Service exposing all ports (OTLP 4317/4318, query UI 16686, health 13133, agent 5775/6831/6832)
 - ConfigMap with the `userconfig` OTel Collector-format config
+- ES index cleaner CronJob (7-day retention)
+
+### Deployment Order
+
+FluxCD infrastructure deploys before apps:
+1. Infrastructure controllers deploy ECK operator (installs CRDs)
+2. Apps deploy Elasticsearch CR and Jaeger HelmRelease
+3. Jaeger will retry connecting to ES until it's ready (standard FluxCD reconciliation)
 
 ### Risks
 
 | Risk | Severity | Mitigation |
 |------|----------|------------|
-| Chart marked "experimental" | Low | Pinned to 4.6.x |
+| Jaeger chart marked "experimental" | Low | Pinned to 4.6.x |
 | Historical traces lost | Accepted | User confirmed acceptable |
-| `userconfig` overrides entire default config | Medium | Config includes all required sections (health check, receivers, exporters, telemetry) |
-| `postRenderers` patch fragility | Low | Targets specific Deployment by name; will fail visibly if chart changes structure |
-| OTel Collector endpoint change | Low | Single line change, clear dependency |
-| Badger data on local-path (node-local) | Low | Traces are operational data, not critical; node failure loses history which is acceptable |
-
-### Deployment Order
-
-No special ordering needed — both files are in the apps Kustomization which FluxCD reconciles together. The brief window where the OTel Collector references the old service name will result in temporary trace export failures until both resources reconcile, which is acceptable.
+| `userconfig` overrides entire default config | Medium | Config includes all required sections |
+| ECK operator adds cluster-wide CRDs | Low | Standard operator pattern, same as cert-manager |
+| Elasticsearch on NFS performance | Low | Acceptable for home lab tracing workload |
+| Pi memory constraints (ES + Jaeger) | Low | ES heap pinned at 512MB, Pi has 4-8GB shared |
+| Anonymous superuser on ES | Low | Internal-only, no external exposure |
