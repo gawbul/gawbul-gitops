@@ -32,10 +32,10 @@ spec:
               OLLAMA_KEEP_ALIVE: "24h"
             resources:
               requests:
-                cpu: 4000m
+                cpu: 3000m
                 memory: 12Gi
               limits:
-                cpu: 4000m
+                cpu: 3000m
                 memory: 12Gi
         pod:
           securityContext:
