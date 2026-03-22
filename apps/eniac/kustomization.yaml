@@ -7,6 +7,7 @@ resources:
   - pihole.yaml
   - loki.yaml
   - kube-prometheus-stack.yaml
+  - elasticsearch.yaml
   - jaeger.yaml
   - opentelemetry-operator.yaml
   - reloader.yaml

@@ -1,0 +1,34 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: elastic
+  namespace: elastic-system
+spec:
+  interval: 1h
+  url: https://helm.elastic.co
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: eck-operator
+  namespace: elastic-system
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: eck-operator
+      version: "3.x"
+      sourceRef:
+        kind: HelmRepository
+        name: elastic
+        namespace: elastic-system
+      interval: 1h
+  values:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 150Mi

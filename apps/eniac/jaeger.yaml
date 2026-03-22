@@ -18,54 +18,86 @@ spec:
   chart:
     spec:
       chart: jaeger
-      version: "3.x"
+      version: "4.6.x"
       sourceRef:
         kind: HelmRepository
         name: jaegertracing
         namespace: monitoring
       interval: 1h
   values:
-    provisionDataStore:
-      cassandra: false
-      elasticsearch: true
-    storage:
-      type: elasticsearch
-    elasticsearch:
-      data:
-        persistence:
-          enabled: true
-          storageClass: nfs-client
-          size: 8Gi
-      master:
-        persistence:
-          enabled: true
-          storageClass: nfs-client
-          size: 8Gi
-      image:
-        repository: bitnamilegacy/elasticsearch
-      sysctlImage:
-        repository: bitnamilegacy/os-shell
-      volumePermissions:
-        image:
-          repository: bitnamilegacy/os-shell
-    collector:
-      service:
-        otlp:
-          grpc:
-            name: otlp-grpc
-            port: 4317
-          http:
-            name: otlp-http
-            port: 4318
-    query:
-      enabled: true
-      basePath: /jaeger
+    jaeger:
       ingress:
         enabled: true
         ingressClassName: traefik
+        pathType: Prefix
+        path: /jaeger
         hosts:
           - monitoring.home.gawbul.io
         tls:
           - secretName: monitoring-tls
-            host:
+            hosts:
               - monitoring.home.gawbul.io
+    storage:
+      type: elasticsearch
+      elasticsearch:
+        host: jaeger-es-http.monitoring.svc.cluster.local
+        port: 9200
+        scheme: http
+    esIndexCleaner:
+      enabled: true
+      schedule: "55 23 * * *"
+      numberOfDays: 7
+    esRollover:
+      enabled: false
+    esLookback:
+      enabled: false
+    userconfig:
+      extensions:
+        healthcheckv2:
+          use_v2: true
+          http: {}
+        jaeger_storage:
+          backends:
+            primary_store:
+              elasticsearch:
+                server_urls:
+                  - http://jaeger-es-http.monitoring.svc.cluster.local:9200
+                index_prefix: jaeger
+        jaeger_query:
+          base_path: /jaeger
+          storage:
+            traces: primary_store
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+      processors:
+        batch: {}
+      exporters:
+        jaeger_storage_exporter:
+          trace_storage: primary_store
+      service:
+        extensions:
+          - healthcheckv2
+          - jaeger_storage
+          - jaeger_query
+        pipelines:
+          traces:
+            receivers:
+              - otlp
+            processors:
+              - batch
+            exporters:
+              - jaeger_storage_exporter
+        telemetry:
+          metrics:
+            level: detailed
+            readers:
+              - pull:
+                  exporter:
+                    prometheus:
+                      host: 0.0.0.0
+                      port: 8888
