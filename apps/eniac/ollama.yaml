@@ -75,7 +75,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pull-llama3-2
+  name: pull-llama3-1
   namespace: media
   annotations:
     "helm.sh/hook": post-install,post-upgrade
@@ -91,5 +91,5 @@ spec:
             - "POST"
             - "http://ollama.media.svc.cluster.local:11434/api/pull"
             - "-d"
-            - '{"name": "llama3.2"}'
+            - '{"name": "llama3.1"}'
       restartPolicy: OnFailure
