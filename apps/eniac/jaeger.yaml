@@ -24,24 +24,6 @@ spec:
         name: jaegertracing
         namespace: monitoring
       interval: 1h
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: jaeger
-            patch: |
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: badger-data
-                  persistentVolumeClaim:
-                    claimName: jaeger-badger-data
-              - op: add
-                path: /spec/template/spec/containers/0/volumeMounts/-
-                value:
-                  name: badger-data
-                  mountPath: /badger/data
   values:
     jaeger:
       ingress:
@@ -55,25 +37,20 @@ spec:
           - secretName: monitoring-tls
             hosts:
               - monitoring.home.gawbul.io
+    storage:
+      type: elasticsearch
+      elasticsearch:
+        host: jaeger-es-http.monitoring.svc.cluster.local
+        port: 9200
+        scheme: http
     esIndexCleaner:
-      enabled: false
+      enabled: true
+      schedule: "55 23 * * *"
+      numberOfDays: 7
     esRollover:
       enabled: false
     esLookback:
       enabled: false
-    extraObjects:
-      - apiVersion: v1
-        kind: PersistentVolumeClaim
-        metadata:
-          name: jaeger-badger-data
-          namespace: monitoring
-        spec:
-          storageClassName: local-path
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 8Gi
     userconfig:
       extensions:
         healthcheckv2:
@@ -82,11 +59,10 @@ spec:
         jaeger_storage:
           backends:
             primary_store:
-              badger:
-                directories:
-                  keys: /badger/data/keys
-                  values: /badger/data/values
-                maintenance_interval: 5m
+              elasticsearch:
+                server_urls:
+                  - http://jaeger-es-http.monitoring.svc.cluster.local:9200
+                index_prefix: jaeger
         jaeger_query:
           base_path: /jaeger
           storage:
