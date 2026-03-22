@@ -62,7 +62,8 @@ spec:
               elasticsearch:
                 server_urls:
                   - http://jaeger-es-http.monitoring.svc.cluster.local:9200
-                index_prefix: jaeger
+                indices:
+                  index_prefix: jaeger
         jaeger_query:
           base_path: /jaeger
           storage:
