@@ -42,9 +42,27 @@ spec:
             fsGroup: 1000
     service:
       main:
+        controller: main
         ports:
           http:
             port: 11434
+    ingress:
+      main:
+        enabled: true
+        className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+        hosts:
+          - host: ollama.home.gawbul.io
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - hosts:
+              - ollama.home.gawbul.io
+            secretName: ollama-tls
     persistence:
       models:
         enabled: true
