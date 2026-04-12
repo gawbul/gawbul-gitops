@@ -27,6 +27,7 @@ spec:
             env:
               TZ: Europe/London
               BASE_URL: https://aiostreams.home.gawbul.io
+              ADDON_ID: aiostreams.home.gawbul.io
             envFrom:
               - secretRef:
                   name: aiostreams-secret
