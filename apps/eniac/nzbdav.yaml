@@ -1,0 +1,60 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nzbdav
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-labs
+        namespace: media
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: nzbdav/nzbdav
+              tag: latest
+            env:
+              TZ: Europe/London
+              PUID: "1000"
+              PGID: "1000"
+    service:
+      main:
+        ports:
+          http:
+            port: 3000
+    ingress:
+      main:
+        enabled: true
+        className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+        hosts:
+          - host: nzbdav.home.gawbul.io
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - hosts:
+              - nzbdav.home.gawbul.io
+            secretName: nzbdav-tls
+    persistence:
+      config:
+        enabled: true
+        storageClass: local-path
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        globalMounts:
+          - path: /config
