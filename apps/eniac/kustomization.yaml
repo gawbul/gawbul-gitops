@@ -24,3 +24,5 @@ resources:
   - recommendarr.yaml
   - plex-secret.yaml
   - plex.yaml
+  - aiostreams-secret.yaml
+  - aiostreams.yaml
