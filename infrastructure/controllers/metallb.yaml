@@ -31,3 +31,10 @@ spec:
         name: metallb
         namespace: metallb-system
       interval: 1h
+  values:
+    frrk8s:
+      enabled: false
+    frr-k8s:
+      prometheus:
+        serviceMonitor:
+          enabled: false
